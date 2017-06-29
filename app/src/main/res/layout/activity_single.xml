@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#000000">
+
+
+    <SurfaceView
+        android:id="@+id/m_xlsurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:id="@+id/currentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="0:0"/>
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="0:0"/>
+
+            <SeekBar
+                android:id="@+id/video_progress"
+                style="@style/Base.Widget.AppCompat.SeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/duration"
+                android:layout_toRightOf="@id/currentTime"
+                android:background="@android:color/transparent"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentLeft="true">
+
+                <TextView
+                    android:id="@+id/seek_back"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/seek_back"/>
+
+                <TextView
+                    android:id="@+id/start"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/play"/>
+
+                <TextView
+                    android:id="@+id/seek_front"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/seek_front"/>
+
+                <TextView
+                    android:id="@+id/stop"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/stop"/>
+
+                <TextView
+                    android:id="@+id/setting"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/setting"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/enable_tracker"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/ic_vr_tuoluo"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/choose_vr_mode_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#30ffffff"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:visibility="invisible"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/player_nomal"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_nomal_play"/>
+
+            <TextView
+                android:id="@+id/vr_model_ball"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ic_vr_ball"/>
+
+            <TextView
+                android:id="@+id/vr_model_two_eye"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ic_vr_two_eye"/>
+
+            <TextView
+                android:id="@+id/vr_model_building"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ic_vr_building"/>
+
+            <TextView
+                android:id="@+id/vr_model_little_star"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ic_vr_little_star"/>
+
+            <TextView
+                android:id="@+id/vr_model_pic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ic_vr_pic"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="#666666"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/clockwise"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/turn_left"/>
+
+            <TextView
+                android:id="@+id/anti_clockwise"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/turn_right"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="#666666"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="后台播放"
+                android:textColor="#333333"/>
+
+            <CheckBox
+                android:id="@+id/back_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"/>
+
+            <TextView
+                android:id="@+id/rate_plus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/plus"/>
+
+            <TextView
+                android:id="@+id/now_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="1.0"/>
+
+            <TextView
+                android:id="@+id/rate_minus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/minus"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

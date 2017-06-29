@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+    <TextView
+        android:id="@+id/player_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#eeeeee"
+        android:gravity="center_vertical"
+        android:textColor="#333333"
+        android:paddingLeft="10dp"
+        tools:text="biandroid"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e0e0e0"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

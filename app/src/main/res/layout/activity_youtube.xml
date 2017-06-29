@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#e0e0e0">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/video_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.cls.xl.xl.youtube.DragVideoView
+        android:id="@+id/drag_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <SurfaceView
+            android:id="@+id/video_surface"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/video_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.cls.xl.xl.youtube.DragVideoView>
+</FrameLayout>

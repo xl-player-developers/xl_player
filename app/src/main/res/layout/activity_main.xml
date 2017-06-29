@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e0e0e0">
+
+    <Button
+        android:id="@+id/play_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="play"
+        android:textColorHint="#666666"/>
+
+    <EditText
+        android:id="@+id/url_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/play_video"
+        android:hint="please input your test url"
+        android:inputType="textUri"/>
+
+    <Switch
+        android:id="@+id/open_sw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/url_edit"
+        android:layout_margin="10dp"
+        android:checked="false"
+        android:switchPadding="10dp"
+        android:text="@string/decode_sw"
+        android:textColor="#333333"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/choose_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/open_sw"/>
+
+
+</RelativeLayout>

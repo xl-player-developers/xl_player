@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:background="#eeeeee"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/video_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:ellipsize="middle"
+        android:gravity="center_vertical"
+        android:textColor="#333333"/>
+    <TextView
+        android:background="#e0e0e0"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>
