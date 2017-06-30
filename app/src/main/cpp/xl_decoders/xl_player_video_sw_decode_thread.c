@@ -14,13 +14,17 @@
 void static inline drop_video_packet(xl_play_data * pd){
     AVPacket * packet = xl_packet_queue_get(pd->video_packet_queue);
     if(packet != NULL){
-        int64_t time_stamp = av_rescale_q(packet->pts,
-                                          pd->pFormatCtx->streams[pd->videoIndex]->time_base,
-                                          AV_TIME_BASE_Q);
-        xl_packet_pool_unref_packet(pd->packet_pool, packet);
-        int64_t diff = time_stamp - pd->audio_clock->pts;
-        if(diff > 0){
-            usleep((useconds_t) diff);
+        if (packet != &pd->video_packet_queue->flush_packet){
+            int64_t time_stamp = av_rescale_q(packet->pts,
+                                              pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+                                              AV_TIME_BASE_Q);
+            xl_packet_pool_unref_packet(pd->packet_pool, packet);
+            int64_t diff = time_stamp - pd->audio_clock->pts;
+            if(diff > 0){
+                usleep((useconds_t) diff);
+            }
+        } else {
+            xl_frame_queue_flush(pd->video_frame_queue, pd->video_frame_pool);
         }
     }else{
         usleep(NULL_LOOP_SLEEP_US);

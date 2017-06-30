@@ -16,20 +16,21 @@
 #include "xl_utils/xl_jni_reflect.h"
 #include "xl_audio/xl_audio_filter.h"
 #include "xl_utils/xl_statistics.h"
+
 static int stop(xl_play_data *pd);
 
-static void send_message(xl_play_data * pd, int message){
+static void send_message(xl_play_data *pd, int message) {
     int sig = message;
     write(pd->pipe_fd[1], &sig, sizeof(int));
 }
 
-static int message_callback(int fd, int events, void *data){
+static int message_callback(int fd, int events, void *data) {
     xl_play_data *pd = data;
     int message;
-    for(int i = 0; i < events; i++){
+    for (int i = 0; i < events; i++) {
         read(fd, &message, sizeof(int));
         LOGI("recieve message ==> %d", message);
-        switch(message){
+        switch (message) {
             case xl_message_stop:
                 stop(pd);
                 break;
@@ -46,15 +47,16 @@ static int message_callback(int fd, int events, void *data){
     return 1;
 }
 
-static void buffer_empty_cb(void * data){
+static void buffer_empty_cb(void *data) {
     xl_play_data *pd = data;
-    if(pd->status != BUFFER_EMPTY){
+    if (pd->status != BUFFER_EMPTY) {
         pd->send_message(pd, xl_message_buffer_empty);
     }
 }
-static void buffer_full_cb(void * data){
+
+static void buffer_full_cb(void *data) {
     xl_play_data *pd = data;
-    if(pd->status == BUFFER_EMPTY){
+    if (pd->status == BUFFER_EMPTY) {
         pd->send_message(pd, xl_message_buffer_full);
     }
 }
@@ -85,23 +87,30 @@ static void reset(xl_play_data *pd) {
     xl_video_render_ctx_reset(pd->video_render_ctx);
 }
 
-static inline void set_buffer_time(xl_play_data * pd){
+static inline void set_buffer_time(xl_play_data *pd) {
     float buffer_time_length = pd->buffer_time_length;
     AVRational time_base;
-    if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
-        time_base = pd->pFormatCtx->streams[pd->videoIndex]->time_base;
-        xl_queue_set_duration(pd->video_packet_queue,
-                              (uint64_t) (buffer_time_length / av_q2d(time_base)));
-    }
-    if(pd->av_track_flags & XL_HAS_AUDIO_FLAG){
+    if (pd->av_track_flags & XL_HAS_AUDIO_FLAG) {
         time_base = pd->pFormatCtx->streams[pd->audioIndex]->time_base;
         xl_queue_set_duration(pd->audio_packet_queue,
                               (uint64_t) (buffer_time_length / av_q2d(time_base)));
+        pd->audio_packet_queue->empty_cb = buffer_empty_cb;
+        pd->audio_packet_queue->full_cb = buffer_full_cb;
+        pd->audio_packet_queue->cb_data = pd;
+    } else if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
+        time_base = pd->pFormatCtx->streams[pd->videoIndex]->time_base;
+        xl_queue_set_duration(pd->video_packet_queue,
+                              (uint64_t) (buffer_time_length / av_q2d(time_base)));
+        pd->video_packet_queue->empty_cb = buffer_empty_cb;
+        pd->video_packet_queue->full_cb = buffer_full_cb;
+        pd->video_packet_queue->cb_data = pd;
     }
+
 }
 
-xl_play_data *xl_player_create(JNIEnv *env, jobject instance,int run_android_version,int best_samplerate) {
-    xl_play_data * pd = (xl_play_data *) malloc(sizeof(xl_play_data));
+xl_play_data *
+xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int best_samplerate) {
+    xl_play_data *pd = (xl_play_data *) malloc(sizeof(xl_play_data));
     pd->jniEnv = env;
     (*env)->GetJavaVM(env, &pd->vm);
     pd->xlPlayer = (*pd->jniEnv)->NewGlobalRef(pd->jniEnv, instance);
@@ -126,8 +135,9 @@ xl_play_data *xl_player_create(JNIEnv *env, jobject instance,int run_android_ver
     pd->video_render_ctx = xl_video_render_ctx_create();
     pd->main_looper = ALooper_forThread();
     pipe(pd->pipe_fd);
-    if(1 != ALooper_addFd(pd->main_looper, pd->pipe_fd[0], ALOOPER_POLL_CALLBACK,
-                          ALOOPER_EVENT_INPUT, message_callback, pd)){
+    if (1 !=
+        ALooper_addFd(pd->main_looper, pd->pipe_fd[0], ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT,
+                      message_callback, pd)) {
         LOGE("error. when add fd to main looper");
     }
     pd->change_status = change_status;
@@ -215,19 +225,16 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
         if (ret != 0) {
             goto fail;
         }
-        pd->audio_packet_queue->empty_cb = buffer_empty_cb;
-        pd->audio_packet_queue->full_cb = buffer_full_cb;
-        pd->audio_packet_queue->cb_data = pd;
     }
 
     if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
         codecpar = pd->pFormatCtx->streams[pd->videoIndex]->codecpar;
         pd->width = codecpar->width;
         pd->height = codecpar->height;
-        if (pd->force_sw_decode){
+        if (pd->force_sw_decode) {
             pd->is_sw_decode = true;
         } else {
-            switch (codecpar->codec_id){
+            switch (codecpar->codec_id) {
                 case AV_CODEC_ID_H264:
                 case AV_CODEC_ID_HEVC:
                 case AV_CODEC_ID_MPEG4:
@@ -267,12 +274,9 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
                     break;
             }
         }
-        pd->video_packet_queue->empty_cb = buffer_empty_cb;
-        pd->video_packet_queue->full_cb = buffer_full_cb;
-        pd->video_packet_queue->cb_data = pd;
     }
     set_buffer_time(pd);
-    if(time > 0){
+    if (time > 0) {
         xl_player_seek(pd, time);
     }
     pthread_create(&pd->read_stream_thread, NULL, read_thread, pd);
@@ -297,20 +301,20 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
     return ret;
 }
 
-void xl_player_set_buffer_time(xl_play_data *pd, float buffer_time){
+void xl_player_set_buffer_time(xl_play_data *pd, float buffer_time) {
     pd->buffer_time_length = buffer_time;
-    if(pd->status != IDEL){
+    if (pd->status != IDEL) {
         set_buffer_time(pd);
     }
 }
 
-int xl_player_resume(xl_play_data * pd){
+int xl_player_resume(xl_play_data *pd) {
     pd->change_status(pd, PLAYING);
     pd->audio_ctx->play(pd);
     return 0;
 }
 
-void xl_player_seek(xl_play_data * pd, float seek_to){
+void xl_player_seek(xl_play_data *pd, float seek_to) {
     float total_time = (float) pd->pFormatCtx->duration / AV_TIME_BASE;
     seek_to = seek_to >= 0 ? seek_to : 0;
     seek_to = seek_to <= total_time ? seek_to : total_time;
@@ -318,11 +322,11 @@ void xl_player_seek(xl_play_data * pd, float seek_to){
     pd->seeking = 1;
 }
 
-void xl_player_set_play_background(xl_play_data * pd, bool play_background){
-    if(pd->just_audio){
-        if(pd->is_sw_decode){
+void xl_player_set_play_background(xl_play_data *pd, bool play_background) {
+    if (pd->just_audio) {
+        if (pd->is_sw_decode) {
             avcodec_flush_buffers(pd->pVideoCodecCtx);
-        }else{
+        } else {
             xl_mediacodec_flush(pd);
         }
     }
@@ -385,7 +389,7 @@ static inline void clean_queues(xl_play_data *pd) {
     }
 }
 
-static int stop(xl_play_data *pd){
+static int stop(xl_play_data *pd) {
     // remove buffer call back
     pd->audio_packet_queue->empty_cb = NULL;
     pd->audio_packet_queue->full_cb = NULL;
@@ -457,14 +461,15 @@ int xl_player_release(xl_play_data *pd) {
 }
 
 void change_status(xl_play_data *pd, PlayStatus status) {
-    if(status == BUFFER_FULL) {
+    if (status == BUFFER_FULL) {
         xl_player_resume(pd);
-    }else{
+    } else {
         pd->status = status;
     }
-    (*pd->jniEnv)->CallVoidMethod(pd->jniEnv, pd->xlPlayer, pd->jc->player_onPlayStatusChanged, status);
+    (*pd->jniEnv)->CallVoidMethod(pd->jniEnv, pd->xlPlayer, pd->jc->player_onPlayStatusChanged,
+                                  status);
 }
 
-void change_audio_speed(float speed, xl_play_data *pd){
+void change_audio_speed(float speed, xl_play_data *pd) {
     xl_audio_filter_change_speed(pd, speed);
 }
