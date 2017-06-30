@@ -24,24 +24,18 @@ static SLPlayItf bqPlayerPlay;
 static SLAndroidSimpleBufferQueueItf bqPlayerBufferQueue;
 static SLVolumeItf bqPlayerVolume;
 
-static uint8_t *buffer;
-static unsigned int bufferSize;
-static xl_audio_player_context *audio_ctx;
 
-static int64_t get_delta_time() {
-//    SLAndroidSimpleBufferQueueState state;
-//    (*bqPlayerBufferQueue)->GetState(bqPlayerBufferQueue, &state);
-//    LOGI("queue count ==> %u, index ==> %u", state.count, state.index);
-
+static int64_t get_delta_time(xl_audio_player_context * ctx) {
     SLmillisecond sec;
     (*bqPlayerPlay)->GetPosition(bqPlayerPlay, &sec);
-    if (sec > audio_ctx->play_pos) {
-        return (int64_t) (sec - audio_ctx->play_pos) * 1000;
+    if (sec > ctx->play_pos) {
+        return (int64_t) (sec - ctx->play_pos) * 1000;
     }
     return 0;
 }
 
 static int get_audio_frame(xl_play_data * pd) {
+    xl_audio_player_context * ctx = pd->audio_player_ctx;
     if (pd->status == IDEL || pd->status == PAUSED || pd->status == BUFFER_EMPTY) {
         return -1;
     }
@@ -65,57 +59,48 @@ static int get_audio_frame(xl_play_data * pd) {
         return get_audio_frame(pd);
     }
 
-    int out_buffer_size = av_samples_get_buffer_size(NULL, pd->audio_frame->channels, pd->audio_frame->nb_samples,
+    ctx->frame_size = av_samples_get_buffer_size(NULL, pd->audio_frame->channels, pd->audio_frame->nb_samples,
                                                      AV_SAMPLE_FMT_S16, 1);
     // filter will rewrite the frame's pts.  use  ptk_dts instead.
     int64_t time_stamp = av_rescale_q(pd->audio_frame->pkt_dts,
-                                      pd->pFormatCtx->streams[pd->audioIndex]->time_base,
+                                      pd->format_context->streams[pd->audio_index]->time_base,
                                       AV_TIME_BASE_Q);
-    if(pd->audioBufferSize < out_buffer_size){
-        pd->audioBufferSize = out_buffer_size;
-        if(pd->audioBuffer == NULL){
-            pd->audioBuffer = malloc((size_t) pd->audioBufferSize);
+    if(ctx->buffer_size < ctx->frame_size){
+        ctx->buffer_size = ctx->frame_size;
+        if(ctx->buffer == NULL){
+            ctx->buffer = malloc((size_t) ctx->buffer_size);
         }else{
-            pd->audioBuffer = realloc(pd->audioBuffer, (size_t) pd->audioBufferSize);
+            ctx->buffer = realloc(ctx->buffer, (size_t) ctx->buffer_size);
         }
     }
-    if(out_buffer_size > 0){
-        memcpy(pd->audioBuffer, pd->audio_frame->data[0], (size_t) out_buffer_size);
+    if(ctx->frame_size > 0){
+        memcpy(ctx->buffer, pd->audio_frame->data[0], (size_t) ctx->frame_size);
     }
     xl_frame_pool_unref_frame(pd->audio_frame_pool, pd->audio_frame);
-    bufferSize = (unsigned int) out_buffer_size;
-    buffer = pd->audioBuffer;
     xl_clock_set(pd->audio_clock, time_stamp);
     return 0;
 }
 
 static void bqPlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
     xl_play_data * pd = context;
-    pthread_mutex_lock(audio_ctx->lock);
+    xl_audio_player_context * ctx = pd->audio_player_ctx;
+    pthread_mutex_lock(ctx->lock);
     assert(bq == bqPlayerBufferQueue);
-    bufferSize = 0;
     if (-1 == get_audio_frame(pd)) {
         (*bqPlayerPlay)->SetPlayState(bqPlayerPlay, SL_PLAYSTATE_PAUSED);
-        pthread_mutex_unlock(audio_ctx->lock);
+        pthread_mutex_unlock(ctx->lock);
         return;
     }
     // for streaming playback, replace this test by logic to find and fill the next buffer
-    if (NULL != buffer && 0 != bufferSize) {
+    if (NULL != ctx->buffer && 0 != ctx->frame_size) {
         SLresult result;
         // enqueue another buffer
-        result = (*bqPlayerBufferQueue)->Enqueue(bqPlayerBufferQueue, buffer, bufferSize);
-        (*bqPlayerPlay)->GetPosition(bqPlayerPlay, &audio_ctx->play_pos);
-        // the most likely other result is SL_RESULT_BUFFER_INSUFFICIENT,
-        // which for this code example would indicate a programming error
-//        while(result == SL_RESULT_BUFFER_INSUFFICIENT){
-//            usleep(100000);
-//            result = (*bqPlayerBufferQueue)->Enqueue(bqPlayerBufferQueue, buffer, bufferSize);
-//        }
-
-//        assert(SL_RESULT_SUCCESS == result);
+        result = (*bqPlayerBufferQueue)->Enqueue(bqPlayerBufferQueue, ctx->buffer,
+                                                 (SLuint32) ctx->frame_size);
+        (*bqPlayerPlay)->GetPosition(bqPlayerPlay, &ctx->play_pos);
         (void) result;
     }
-    pthread_mutex_unlock(audio_ctx->lock);
+    pthread_mutex_unlock(ctx->lock);
 }
 
 void xl_audio_play(xl_play_data * pd) {
@@ -129,7 +114,7 @@ void xl_audio_play(xl_play_data * pd) {
 
 void xl_audio_player_shutdown();
 
-void xl_audio_player_release();
+void xl_audio_player_release(xl_audio_player_context * ctx);
 
 void xl_audio_player_create(int rate, int channel, xl_play_data * pd);
 
@@ -157,15 +142,15 @@ xl_audio_player_context *xl_audio_engine_create() {
     (void) result;
     // ignore unsuccessful result codes for environmental reverb, as it is optional for this example
 
-    audio_ctx = malloc(sizeof(xl_audio_player_context));
-    audio_ctx->play = xl_audio_play;
-    audio_ctx->shutdown = xl_audio_player_shutdown;
-    audio_ctx->release = xl_audio_player_release;
-    audio_ctx->player_create = xl_audio_player_create;
-    audio_ctx->get_delta_time = get_delta_time;
-    audio_ctx->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-    pthread_mutex_init(audio_ctx->lock, NULL);
-    return audio_ctx;
+    xl_audio_player_context * ctx = malloc(sizeof(xl_audio_player_context));
+    ctx->play = xl_audio_play;
+    ctx->shutdown = xl_audio_player_shutdown;
+    ctx->release = xl_audio_player_release;
+    ctx->player_create = xl_audio_player_create;
+    ctx->get_delta_time = get_delta_time;
+    ctx->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init(ctx->lock, NULL);
+    return ctx;
 }
 
 void xl_audio_player_create(int rate, int channel, xl_play_data * pd) {
@@ -239,7 +224,6 @@ void xl_audio_player_create(int rate, int channel, xl_play_data * pd) {
 //    result = (*bqPlayerObject)->GetInterface(bqPlayerObject, SL_IID_PLAYBACKRATE, &playbackRateItf);
 //    assert(SL_RESULT_SUCCESS == result);
 //    (void) result;
-    // set the player's state to playing
     result = (*bqPlayerPlay)->SetPlayState(bqPlayerPlay, SL_PLAYSTATE_PAUSED);
     assert(SL_RESULT_SUCCESS == result);
     (void) result;
@@ -251,7 +235,7 @@ void xl_audio_player_shutdown() {
     }
 }
 
-void xl_audio_player_release() {
+void xl_audio_player_release(xl_audio_player_context * ctx) {
     // destroy buffer queue audio player object, and invalidate all associated interfaces
     if (bqPlayerObject != NULL) {
         (*bqPlayerObject)->Destroy(bqPlayerObject);
@@ -273,9 +257,12 @@ void xl_audio_player_release() {
         engineEngine = NULL;
     }
 
-    if (audio_ctx->lock != NULL) {
-        pthread_mutex_destroy(audio_ctx->lock);
-        free(audio_ctx->lock);
+    if (ctx->lock != NULL) {
+        pthread_mutex_destroy(ctx->lock);
+        free(ctx->lock);
     }
-    free(audio_ctx);
+    if(ctx->buffer != NULL){
+        free(ctx->buffer);
+    }
+    free(ctx);
 }

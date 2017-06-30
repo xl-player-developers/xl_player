@@ -8,7 +8,7 @@
 #if __ANDROID_API__ >= NDK_MEDIACODEC_VERSION
 
 int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     if (packet == NULL) { return -2; }
     uint32_t keyframe_flag = 0;
 //    av_packet_split_side_data(packet);
@@ -16,7 +16,7 @@ int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
     if (!time_stamp && packet->dts)
         time_stamp = packet->dts;
     if (time_stamp > 0) {
-        time_stamp = av_rescale_q(time_stamp, pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+        time_stamp = av_rescale_q(time_stamp, pd->format_context->streams[pd->video_index]->time_base,
                                   AV_TIME_BASE_Q);
     } else {
         time_stamp = 0;
@@ -53,11 +53,11 @@ int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
 }
 
 void xl_mediacodec_release_buffer(xl_play_data *pd, AVFrame *frame) {
-    AMediaCodec_releaseOutputBuffer(pd->pMediaCodecCtx->codec, (size_t) frame->HW_BUFFER_ID, true);
+    AMediaCodec_releaseOutputBuffer(pd->mediacodec_ctx->codec, (size_t) frame->HW_BUFFER_ID, true);
 }
 
 int xl_mediacodec_receive_frame(xl_play_data *pd, AVFrame *frame) {
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     AMediaCodecBufferInfo info;
     int output_ret = 1;
     ssize_t outbufidx = AMediaCodec_dequeueOutputBuffer(ctx->codec, &info, 0);
@@ -104,13 +104,13 @@ int xl_mediacodec_receive_frame(xl_play_data *pd, AVFrame *frame) {
 }
 
 void xl_mediacodec_flush(xl_play_data *pd) {
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     AMediaCodec_flush(ctx->codec);
 }
 
 xl_mediacodec_context *xl_create_mediacodec_context(xl_play_data *pd) {
     xl_mediacodec_context *ctx = (xl_mediacodec_context *) malloc(sizeof(xl_mediacodec_context));
-    AVCodecParameters *codecpar = pd->pFormatCtx->streams[pd->videoIndex]->codecpar;
+    AVCodecParameters *codecpar = pd->format_context->streams[pd->video_index]->codecpar;
     ctx->width = codecpar->width;
     ctx->height = codecpar->height;
     ctx->codec_id = codecpar->codec_id;
@@ -192,7 +192,7 @@ xl_mediacodec_context *xl_create_mediacodec_context(xl_play_data *pd) {
 }
 
 void xl_mediacodec_start(xl_play_data *pd){
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     while(pd->video_render_ctx->texture_window == NULL){
         usleep(10000);
     }
@@ -207,15 +207,15 @@ void xl_mediacodec_start(xl_play_data *pd){
 }
 
 void xl_mediacodec_stop(xl_play_data * pd){
-    AMediaCodec_stop(pd->pMediaCodecCtx->codec);
+    AMediaCodec_stop(pd->mediacodec_ctx->codec);
 }
 
 void xl_mediacodec_release_context(xl_play_data * pd){
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     AMediaCodec_delete(ctx->codec);
     AMediaFormat_delete(ctx->format);
     free(ctx);
-    pd->pMediaCodecCtx = NULL;
+    pd->mediacodec_ctx = NULL;
 }
 #else
 
@@ -238,7 +238,7 @@ static int64_t get_long(uint8_t *buf) {
 xl_mediacodec_context *xl_create_mediacodec_context(
         xl_play_data *pd) {
     xl_mediacodec_context *ctx = (xl_mediacodec_context *) malloc(sizeof(xl_mediacodec_context));
-    AVCodecParameters *codecpar = pd->pFormatCtx->streams[pd->videoIndex]->codecpar;
+    AVCodecParameters *codecpar = pd->format_context->streams[pd->video_index]->codecpar;
     ctx->width = codecpar->width;
     ctx->height = codecpar->height;
     ctx->codec_id = codecpar->codec_id;
@@ -248,10 +248,10 @@ xl_mediacodec_context *xl_create_mediacodec_context(
 }
 
 void xl_mediacodec_start(xl_play_data *pd){
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     JNIEnv *jniEnv = ctx->jniEnv;
     xl_java_class * jc = pd->jc;
-    AVCodecParameters *codecpar = pd->pFormatCtx->streams[pd->videoIndex]->codecpar;
+    AVCodecParameters *codecpar = pd->format_context->streams[pd->video_index]->codecpar;
     jobject codecName = NULL, csd_0 = NULL, csd_1 = NULL;
     while(pd->video_render_ctx->texture_window == NULL){
         usleep(10000);
@@ -347,9 +347,9 @@ void xl_mediacodec_release_buffer(xl_play_data *pd, AVFrame *frame) {
 }
 
 int xl_mediacodec_receive_frame(xl_play_data *pd, AVFrame *frame) {
-    JNIEnv *jniEnv = pd->pMediaCodecCtx->jniEnv;
+    JNIEnv *jniEnv = pd->mediacodec_ctx->jniEnv;
     xl_java_class * jc = pd->jc;
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     int output_ret = 1;
     jobject deqret = (*jniEnv)->CallStaticObjectMethod(jniEnv, jc->HwDecodeBridge,
                                                        jc->codec_dequeueOutputBufferIndex,
@@ -432,9 +432,9 @@ int xl_mediacodec_receive_frame(xl_play_data *pd, AVFrame *frame) {
 }
 
 int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
-    JNIEnv *jniEnv = pd->pMediaCodecCtx->jniEnv;
+    JNIEnv *jniEnv = pd->mediacodec_ctx->jniEnv;
     xl_java_class * jc = pd->jc;
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     if (packet == NULL) { return -2; }
     int keyframe_flag = 0;
 //    av_packet_split_side_data(packet);
@@ -442,7 +442,7 @@ int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
     if (!time_stamp && packet->dts)
         time_stamp = packet->dts;
     if (time_stamp > 0) {
-        time_stamp = av_rescale_q(time_stamp, pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+        time_stamp = av_rescale_q(time_stamp, pd->format_context->streams[pd->video_index]->time_base,
                                   AV_TIME_BASE_Q);
     } else {
         time_stamp = 0;
@@ -455,7 +455,6 @@ int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
     if ((packet->flags | AV_PKT_FLAG_KEY) > 0) {
         keyframe_flag |= 0x1;
     }
-    // todo : 这个地方会卡
 //    ssize_t id = AMediaCodec_dequeueInputBuffer(ctx->codec, 1000000);
     int id = (*jniEnv)->CallStaticIntMethod(jniEnv, jc->HwDecodeBridge,
                                             jc->codec_dequeueInputBuffer, (jlong) 1000000);
@@ -485,7 +484,7 @@ int xl_mediacodec_send_packet(xl_play_data *pd, AVPacket *packet) {
 }
 
 void xl_mediacodec_flush(xl_play_data *pd) {
-    JNIEnv *jniEnv = pd->pMediaCodecCtx->jniEnv;
+    JNIEnv *jniEnv = pd->mediacodec_ctx->jniEnv;
     xl_java_class * jc = pd->jc;
     (*jniEnv)->CallStaticVoidMethod(jniEnv, jc->HwDecodeBridge, jc->codec_flush);
 }
@@ -494,13 +493,13 @@ void xl_mediacodec_release_context(xl_play_data *pd) {
     JNIEnv *jniEnv = pd->jniEnv;
     xl_java_class * jc = pd->jc;
     (*jniEnv)->CallStaticVoidMethod(jniEnv, jc->HwDecodeBridge, jc->codec_release);
-    xl_mediacodec_context *ctx = pd->pMediaCodecCtx;
+    xl_mediacodec_context *ctx = pd->mediacodec_ctx;
     free(ctx);
-    pd->pMediaCodecCtx = NULL;
+    pd->mediacodec_ctx = NULL;
 }
 
 void xl_mediacodec_stop(xl_play_data *pd) {
-    JNIEnv *jniEnv = pd->pMediaCodecCtx->jniEnv;
+    JNIEnv *jniEnv = pd->mediacodec_ctx->jniEnv;
     xl_java_class * jc = pd->jc;
     (*jniEnv)->CallStaticVoidMethod(jniEnv, jc->HwDecodeBridge, jc->codec_stop);
 }

@@ -23,7 +23,7 @@ void * audio_decode_thread(void * data){
         if(pd->status == PAUSED){
             usleep(NULL_LOOP_SLEEP_US);
         }
-        ret = avcodec_receive_frame(pd->pAudioCodecCtx, decode_frame);
+        ret = avcodec_receive_frame(pd->audio_codec_ctx, decode_frame);
         if (ret == 0) {
             pthread_mutex_lock(ctx->filter_lock);
             int add_ret = av_buffersrc_add_frame(ctx->buffersrc_ctx, decode_frame);
@@ -38,7 +38,7 @@ void * audio_decode_thread(void * data){
                 }
                 // 触发音频播放
                 if (pd->av_track_flags & XL_HAS_AUDIO_FLAG){
-                    pd->audio_ctx->play(pd);
+                    pd->audio_player_ctx->play(pd);
                 }
 
             }
@@ -59,10 +59,10 @@ void * audio_decode_thread(void * data){
             // seek
             if (packet == &pd->audio_packet_queue->flush_packet) {
                 xl_frame_queue_flush(pd->audio_frame_queue, pd->audio_frame_pool);
-                avcodec_flush_buffers(pd->pAudioCodecCtx);
+                avcodec_flush_buffers(pd->audio_codec_ctx);
                 continue;
             }
-            ret = avcodec_send_packet(pd->pAudioCodecCtx, packet);
+            ret = avcodec_send_packet(pd->audio_codec_ctx, packet);
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
             if (ret < 0) {
                 pd->error_code = 3001;

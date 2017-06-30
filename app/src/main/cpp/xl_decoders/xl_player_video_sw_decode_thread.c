@@ -16,7 +16,7 @@ static inline int drop_video_packet(xl_play_data * pd){
     if(packet != NULL){
         if (packet != &pd->video_packet_queue->flush_packet){
             int64_t time_stamp = av_rescale_q(packet->pts,
-                                              pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+                                              pd->format_context->streams[pd->video_index]->time_base,
                                               AV_TIME_BASE_Q);
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
             int64_t diff = time_stamp - pd->audio_clock->pts;
@@ -47,7 +47,7 @@ void * video_decode_sw_thread(void * data){
                 break;
             }
         }else {
-            ret = avcodec_receive_frame(pd->pVideoCodecCtx, frame);
+            ret = avcodec_receive_frame(pd->video_codec_ctx, frame);
             if (ret == 0) {
                 frame->FRAME_ROTATION = pd->frame_rotation;
                 xl_frame_queue_put(pd->video_frame_queue, frame);
@@ -69,10 +69,10 @@ void * video_decode_sw_thread(void * data){
                 // seek
                 if (packet == &pd->video_packet_queue->flush_packet) {
                     xl_frame_queue_flush(pd->video_frame_queue, pd->video_frame_pool);
-                    avcodec_flush_buffers(pd->pVideoCodecCtx);
+                    avcodec_flush_buffers(pd->video_codec_ctx);
                     continue;
                 }
-                ret = avcodec_send_packet(pd->pVideoCodecCtx, packet);
+                ret = avcodec_send_packet(pd->video_codec_ctx, packet);
                 xl_packet_pool_unref_packet(pd->packet_pool, packet);
                 if (ret < 0) {
                     pd->error_code = 4101;

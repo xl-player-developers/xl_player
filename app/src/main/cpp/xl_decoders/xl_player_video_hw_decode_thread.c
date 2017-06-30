@@ -16,7 +16,7 @@ static inline int drop_video_packet(xl_play_data * pd){
     if(packet != NULL){
         if (packet != &pd->video_packet_queue->flush_packet){
             int64_t time_stamp = av_rescale_q(packet->pts,
-                                              pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+                                              pd->format_context->streams[pd->video_index]->time_base,
                                               AV_TIME_BASE_Q);
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
             int64_t diff = time_stamp - pd->audio_clock->pts;
@@ -39,7 +39,7 @@ static inline int drop_video_packet(xl_play_data * pd){
 void * video_decode_hw_thread(void * data){
     prctl(PR_SET_NAME, __func__);
     xl_play_data * pd = (xl_play_data *)data;
-    (*pd->vm)->AttachCurrentThread(pd->vm, &pd->pMediaCodecCtx->jniEnv, NULL);
+    (*pd->vm)->AttachCurrentThread(pd->vm, &pd->mediacodec_ctx->jniEnv, NULL);
     xl_mediacodec_start(pd);
     int ret;
     AVPacket * packet = NULL;

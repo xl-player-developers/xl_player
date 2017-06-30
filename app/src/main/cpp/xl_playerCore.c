@@ -67,14 +67,12 @@ static void reset(xl_play_data *pd) {
     pd->eof = false;
     pd->av_track_flags = 0;
     pd->just_audio = false;
-    pd->videoIndex = -1;
-    pd->audioIndex = -1;
+    pd->video_index = -1;
+    pd->audio_index = -1;
     pd->width = 0;
     pd->height = 0;
     pd->audio_frame = NULL;
     pd->video_frame = NULL;
-    pd->audioBufferSize = 0;
-    pd->audioBuffer = NULL;
     pd->seeking = 0;
     xl_clock_reset(pd->audio_clock);
     xl_clock_reset(pd->video_clock);
@@ -90,14 +88,14 @@ static inline void set_buffer_time(xl_play_data *pd) {
     float buffer_time_length = pd->buffer_time_length;
     AVRational time_base;
     if (pd->av_track_flags & XL_HAS_AUDIO_FLAG) {
-        time_base = pd->pFormatCtx->streams[pd->audioIndex]->time_base;
+        time_base = pd->format_context->streams[pd->audio_index]->time_base;
         xl_queue_set_duration(pd->audio_packet_queue,
                               (uint64_t) (buffer_time_length / av_q2d(time_base)));
         pd->audio_packet_queue->empty_cb = buffer_empty_cb;
         pd->audio_packet_queue->full_cb = buffer_full_cb;
         pd->audio_packet_queue->cb_data = pd;
     } else if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
-        time_base = pd->pFormatCtx->streams[pd->videoIndex]->time_base;
+        time_base = pd->format_context->streams[pd->video_index]->time_base;
         xl_queue_set_duration(pd->video_packet_queue,
                               (uint64_t) (buffer_time_length / av_q2d(time_base)));
         pd->video_packet_queue->empty_cb = buffer_empty_cb;
@@ -131,7 +129,7 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
     av_register_all();
     avfilter_register_all();
     avformat_network_init();
-    pd->audio_ctx = xl_audio_engine_create();
+    pd->audio_player_ctx = xl_audio_engine_create();
     pd->audio_filter_ctx = xl_audio_filter_create();
     pd->video_render_ctx = xl_video_render_ctx_create();
     pd->main_looper = ALooper_forThread();
@@ -149,42 +147,42 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
 }
 
 static int audio_codec_init(xl_play_data *pd) {
-    pd->pAudioCodec = avcodec_find_decoder(
-            pd->pFormatCtx->streams[pd->audioIndex]->codecpar->codec_id);
-    if (pd->pAudioCodec == NULL) {
+    pd->audio_codec = avcodec_find_decoder(
+            pd->format_context->streams[pd->audio_index]->codecpar->codec_id);
+    if (pd->audio_codec == NULL) {
         LOGE("could not find audio codec\n");
         return 202;
     }
-    pd->pAudioCodecCtx = avcodec_alloc_context3(pd->pAudioCodec);
-    avcodec_parameters_to_context(pd->pAudioCodecCtx,
-                                  pd->pFormatCtx->streams[pd->audioIndex]->codecpar);
-    if (avcodec_open2(pd->pAudioCodecCtx, pd->pAudioCodec, NULL) < 0) {
-        avcodec_free_context(&pd->pAudioCodecCtx);
+    pd->audio_codec_ctx = avcodec_alloc_context3(pd->audio_codec);
+    avcodec_parameters_to_context(pd->audio_codec_ctx,
+                                  pd->format_context->streams[pd->audio_index]->codecpar);
+    if (avcodec_open2(pd->audio_codec_ctx, pd->audio_codec, NULL) < 0) {
+        avcodec_free_context(&pd->audio_codec_ctx);
         LOGE("could not open audio codec\n");
         return 203;
     }
     // Android openSL ES   can not support more than 2 channels.
-    int channels = pd->pAudioCodecCtx->channels <= 2 ? pd->pAudioCodecCtx->channels : 2;
-    pd->audio_ctx->player_create(pd->best_samplerate, channels, pd);
+    int channels = pd->audio_codec_ctx->channels <= 2 ? pd->audio_codec_ctx->channels : 2;
+    pd->audio_player_ctx->player_create(pd->best_samplerate, channels, pd);
     xl_audio_filter_change_speed(pd, 1.0);
     return 0;
 }
 
 static int sw_codec_init(xl_play_data *pd) {
-    pd->pVideoCodec = avcodec_find_decoder(
-            pd->pFormatCtx->streams[pd->videoIndex]->codecpar->codec_id);
-    if (pd->pVideoCodec == NULL) {
+    pd->video_codec = avcodec_find_decoder(
+            pd->format_context->streams[pd->video_index]->codecpar->codec_id);
+    if (pd->video_codec == NULL) {
         LOGE("could not find video codec\n");
         return 102;
     }
-    pd->pVideoCodecCtx = avcodec_alloc_context3(pd->pVideoCodec);
-    avcodec_parameters_to_context(pd->pVideoCodecCtx,
-                                  pd->pFormatCtx->streams[pd->videoIndex]->codecpar);
+    pd->video_codec_ctx = avcodec_alloc_context3(pd->video_codec);
+    avcodec_parameters_to_context(pd->video_codec_ctx,
+                                  pd->format_context->streams[pd->video_index]->codecpar);
     AVDictionary *options = NULL;
     av_dict_set(&options, "threads", "auto", 0);
     av_dict_set(&options, "refcounted_frames", "1", 0);
-    if (avcodec_open2(pd->pVideoCodecCtx, pd->pVideoCodec, &options) < 0) {
-        avcodec_free_context(&pd->pVideoCodecCtx);
+    if (avcodec_open2(pd->video_codec_ctx, pd->video_codec, &options) < 0) {
+        avcodec_free_context(&pd->video_codec_ctx);
         LOGE("could not open video codec\n");
         return 103;
     }
@@ -192,31 +190,31 @@ static int sw_codec_init(xl_play_data *pd) {
 }
 
 static int hw_codec_init(xl_play_data *pd) {
-    pd->pMediaCodecCtx = xl_create_mediacodec_context(pd);
+    pd->mediacodec_ctx = xl_create_mediacodec_context(pd);
     return 0;
 }
 
 int xl_player_play(const char *url, float time, xl_play_data *pd) {
     int i, ret;
-    pd->pFormatCtx = avformat_alloc_context();
-    if (avformat_open_input(&pd->pFormatCtx, url, NULL, NULL) != 0) {
+    pd->format_context = avformat_alloc_context();
+    if (avformat_open_input(&pd->format_context, url, NULL, NULL) != 0) {
         LOGE("can not open url\n");
         ret = 100;
         goto fail;
     }
-    if (avformat_find_stream_info(pd->pFormatCtx, NULL) < 0) {
+    if (avformat_find_stream_info(pd->format_context, NULL) < 0) {
         LOGE("can not find stream\n");
         ret = 101;
         goto fail;
     }
-    i = av_find_best_stream(pd->pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+    i = av_find_best_stream(pd->format_context, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
     if (i != AVERROR_STREAM_NOT_FOUND) {
-        pd->videoIndex = i;
+        pd->video_index = i;
         pd->av_track_flags |= XL_HAS_VIDEO_FLAG;
     }
-    i = av_find_best_stream(pd->pFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
+    i = av_find_best_stream(pd->format_context, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
     if (i != AVERROR_STREAM_NOT_FOUND) {
-        pd->audioIndex = i;
+        pd->audio_index = i;
         pd->av_track_flags |= XL_HAS_AUDIO_FLAG;
     }
     AVCodecParameters *codecpar;
@@ -230,7 +228,7 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
     }
 
     if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
-        codecpar = pd->pFormatCtx->streams[pd->videoIndex]->codecpar;
+        codecpar = pd->format_context->streams[pd->video_index]->codecpar;
         pd->width = codecpar->width;
         pd->height = codecpar->height;
         if (pd->force_sw_decode) {
@@ -258,7 +256,7 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
         if (ret != 0) {
             goto fail;
         }
-        AVStream *v_stream = pd->pFormatCtx->streams[pd->videoIndex];
+        AVStream *v_stream = pd->format_context->streams[pd->video_index];
         AVDictionaryEntry *m = NULL;
         m = av_dict_get(v_stream->metadata, "rotate", m, AV_DICT_MATCH_CASE);
         if (m != NULL) {
@@ -297,8 +295,8 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
     return ret;
 
     fail:
-    if (pd->pFormatCtx) {
-        avformat_close_input(&pd->pFormatCtx);
+    if (pd->format_context) {
+        avformat_close_input(&pd->format_context);
     }
     return ret;
 }
@@ -317,13 +315,13 @@ void xl_player_set_buffer_size(xl_play_data *pd, int buffer_size) {
 int xl_player_resume(xl_play_data *pd) {
     pd->change_status(pd, PLAYING);
     if (pd->av_track_flags & XL_HAS_AUDIO_FLAG) {
-        pd->audio_ctx->play(pd);
+        pd->audio_player_ctx->play(pd);
     }
     return 0;
 }
 
 void xl_player_seek(xl_play_data *pd, float seek_to) {
-    float total_time = (float) pd->pFormatCtx->duration / AV_TIME_BASE;
+    float total_time = (float) pd->format_context->duration / AV_TIME_BASE;
     seek_to = seek_to >= 0 ? seek_to : 0;
     seek_to = seek_to <= total_time ? seek_to : total_time;
     pd->seek_to = seek_to;
@@ -333,7 +331,7 @@ void xl_player_seek(xl_play_data *pd, float seek_to) {
 void xl_player_set_play_background(xl_play_data *pd, bool play_background) {
     if (pd->just_audio && (pd->av_track_flags & XL_HAS_VIDEO_FLAG)) {
         if (pd->is_sw_decode) {
-            avcodec_flush_buffers(pd->pVideoCodecCtx);
+            avcodec_flush_buffers(pd->video_codec_ctx);
         } else {
             xl_mediacodec_flush(pd);
         }
@@ -411,7 +409,7 @@ static int stop(xl_play_data *pd) {
     if ((pd->av_track_flags & XL_HAS_VIDEO_FLAG) > 0) {
         pthread_join(pd->video_decode_thread, &thread_res);
         if (pd->is_sw_decode) {
-            avcodec_free_context(&pd->pVideoCodecCtx);
+            avcodec_free_context(&pd->video_codec_ctx);
         } else {
             xl_mediacodec_release_context(pd);
         }
@@ -420,14 +418,12 @@ static int stop(xl_play_data *pd) {
 
     if ((pd->av_track_flags & XL_HAS_AUDIO_FLAG) > 0) {
         pthread_join(pd->audio_decode_thread, &thread_res);
-        avcodec_free_context(&pd->pAudioCodecCtx);
-        pd->audio_ctx->shutdown();
+        avcodec_free_context(&pd->audio_codec_ctx);
+        pd->audio_player_ctx->shutdown();
     }
 
     clean_queues(pd);
-
-    free(pd->audioBuffer);
-    avformat_close_input(&pd->pFormatCtx);
+    avformat_close_input(&pd->format_context);
     reset(pd);
     LOGI("player stoped");
     return 0;
@@ -460,7 +456,7 @@ int xl_player_release(xl_play_data *pd) {
     xl_clock_free(pd->audio_clock);
     xl_clock_free(pd->video_clock);
     xl_video_render_ctx_release(pd->video_render_ctx);
-    pd->audio_ctx->release();
+    pd->audio_player_ctx->release(pd->audio_player_ctx);
     xl_audio_filter_release(pd->audio_filter_ctx);
     (*pd->jniEnv)->DeleteGlobalRef(pd->jniEnv, pd->xlPlayer);
     xl_jni_free(&pd->jc, pd->jniEnv);

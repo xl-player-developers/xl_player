@@ -131,16 +131,19 @@ typedef struct struct_xl_frame_queue {
 typedef struct struct_xl_audio_player_context {
     pthread_mutex_t *lock;
     unsigned int play_pos;
+    int buffer_size;
+    uint8_t * buffer;
+    int frame_size;
 
     void (*play)(struct struct_xl_play_data *pd);
 
     void (*shutdown)();
 
-    void (*release)();
+    void (*release)(struct struct_xl_audio_player_context * ctx);
 
     void (*player_create)(int rate, int channel, struct struct_xl_play_data *pd);
 
-    int64_t (*get_delta_time)();
+    int64_t (*get_delta_time)(struct struct_xl_audio_player_context * ctx);
 } xl_audio_player_context;
 
 typedef struct struct_xl_statistics {
@@ -166,51 +169,48 @@ typedef struct struct_xl_play_data {
     float buffer_time_length;
     bool force_sw_decode;
 
+    // 播放器状态
     PlayStatus status;
+
+    // 各个thread
     pthread_t read_stream_thread;
     pthread_t audio_decode_thread;
     pthread_t video_decode_thread;
     pthread_t gl_thread;
 
     // 封装
-    AVFormatContext *pFormatCtx;
+    AVFormatContext *format_context;
+    int video_index, audio_index;
+    //是否有 音频0x1 视频0x2 字幕0x4
+    uint8_t av_track_flags;
+
+    // packet容器
     xl_packet_queue *video_packet_queue, *audio_packet_queue;
     xl_pakcet_pool *packet_pool;
-    int frame_rotation;
-    int videoIndex, audioIndex;
-    // 统计
-    xl_statistics *statistics;
-
-    // 音频
-    xl_audio_player_context *audio_ctx;
-    xl_audio_filter_context *audio_filter_ctx;
-    AVCodecContext *pAudioCodecCtx;
-    AVCodec *pAudioCodec;
-    AVFrame *audio_frame;
+    // frame容器
     xl_frame_pool *audio_frame_pool;
     xl_frame_queue *audio_frame_queue;
-    int audioBufferSize;
-    uint8_t *audioBuffer;
+    xl_frame_pool *video_frame_pool;
+    xl_frame_queue *video_frame_queue;
+
+    // 音频
+    xl_audio_player_context *audio_player_ctx;
+    xl_audio_filter_context *audio_filter_ctx;
+    AVCodecContext *audio_codec_ctx;
+    AVCodec *audio_codec;
+    AVFrame *audio_frame;
 
     // 软硬解公用
     xl_video_render_context *video_render_ctx;
     AVFrame *video_frame;
     int width, height;
-    xl_frame_pool *video_frame_pool;
-    xl_frame_queue *video_frame_queue;
-    //软解视频
-    AVCodecContext *pVideoCodecCtx;
-    AVCodec *pVideoCodec;
-    // 硬解
-    xl_mediacodec_context *pMediaCodecCtx;
-//    const AVBitStreamFilter * pBsf;
-//    AVBSFContext * pBsfCtx;
+    int frame_rotation;
 
-    //是否有 音频0x1 视频0x2 字幕0x4
-#define XL_HAS_AUDIO_FLAG 0x1
-#define XL_HAS_VIDEO_FLAG 0x2
-//#define XL_HAS_SUBTITLE_FLAG 0x4
-    uint8_t av_track_flags;
+    //软解视频
+    AVCodecContext *video_codec_ctx;
+    AVCodec *video_codec;
+    // 硬解
+    xl_mediacodec_context *mediacodec_ctx;
 
     // 音视频同步
     xl_clock *video_clock;
@@ -228,7 +228,9 @@ typedef struct struct_xl_play_data {
 
     //end of file
     bool eof;
-    //error code
+
+    // error code
+    // -1 stop by user
     // 1xx init
     // 2xx format and stream
     // 3xx audio decode
@@ -237,6 +239,11 @@ typedef struct struct_xl_play_data {
     // 6xx audio play
     // 7xx video play  openGL
     int error_code;
+
+    // 统计
+    xl_statistics *statistics;
+
+    // message
     ALooper *main_looper;
     int pipe_fd[2];
 

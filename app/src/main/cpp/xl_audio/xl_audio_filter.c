@@ -49,8 +49,8 @@ void xl_audio_filter_change_speed(xl_play_data *pd, float speed) {
     ctx->inputs = avfilter_inout_alloc();
     ctx->outputs = avfilter_inout_alloc();
     ctx->filter_graph = avfilter_graph_alloc();
-    AVRational time_base = pd->pFormatCtx->streams[pd->audioIndex]->time_base;
-    AVCodecContext *dec_ctx = pd->pAudioCodecCtx;
+    AVRational time_base = pd->format_context->streams[pd->audio_index]->time_base;
+    AVCodecContext *dec_ctx = pd->audio_codec_ctx;
     enum AVSampleFormat out_sample_fmts[] = {AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE};
     int out_sample_rates[] = {0, -1};
     out_sample_rates[0] = pd->best_samplerate;

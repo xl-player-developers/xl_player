@@ -177,7 +177,7 @@ static inline int draw_video_frame(xl_play_data *pd) {
     int64_t time_stamp;
     if (pd->is_sw_decode) {
         time_stamp = av_rescale_q(pd->video_frame->pts,
-                                  pd->pFormatCtx->streams[pd->videoIndex]->time_base,
+                                  pd->format_context->streams[pd->video_index]->time_base,
                                   AV_TIME_BASE_Q);
     } else {
         time_stamp = pd->video_frame->pts;
@@ -186,7 +186,7 @@ static inline int draw_video_frame(xl_play_data *pd) {
 
     int64_t diff = 0;
     if(pd->av_track_flags & XL_HAS_AUDIO_FLAG){
-        diff = time_stamp - (pd->audio_clock->pts + pd->audio_ctx->get_delta_time());
+        diff = time_stamp - (pd->audio_clock->pts + pd->audio_player_ctx->get_delta_time(pd->audio_player_ctx));
     }else{
         diff = time_stamp - xl_clock_get(pd->video_clock);
     }

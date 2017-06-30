@@ -116,8 +116,8 @@ Java_com_xl_media_library_base_BaseNativeInterface_stop(JNIEnv *env, jobject ins
 JNIEXPORT jfloat JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_getTotalTime(JNIEnv *env, jobject instance) {
     if (pd && pd->status == PLAYING) {
-        if (pd->pFormatCtx->duration != AV_NOPTS_VALUE) {
-            return (float) pd->pFormatCtx->duration / AV_TIME_BASE;
+        if (pd->format_context->duration != AV_NOPTS_VALUE) {
+            return (float) pd->format_context->duration / AV_TIME_BASE;
         }
     }
     return 0.0f;
@@ -185,7 +185,7 @@ Java_com_xl_media_library_base_BaseNativeInterface_changeRate(JNIEnv *env, jobje
         if (rate < 0.5 || rate > 2.0) {
             return;
         }
-//        pd->audio_ctx->changeSpeed((short) (1000 * rate));
+//        pd->audio_player_ctx->changeSpeed((short) (1000 * rate));
         change_audio_speed(rate, pd);
     }
 
@@ -250,11 +250,11 @@ Java_com_xl_media_library_base_BaseNativeInterface_getStatistics(JNIEnv *env, jc
             int buffer_time = 0;
             AVRational time_base;
             if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
-                time_base = pd->pFormatCtx->streams[pd->videoIndex]->time_base;
+                time_base = pd->format_context->streams[pd->video_index]->time_base;
                 buffer_time = (int) ((double) pd->video_packet_queue->duration * 1000 *
                                      av_q2d(time_base));
             } else {
-                time_base = pd->pFormatCtx->streams[pd->audioIndex]->time_base;
+                time_base = pd->format_context->streams[pd->audio_index]->time_base;
                 buffer_time = (int) ((double) pd->audio_packet_queue->duration * 1000 *
                                      av_q2d(time_base));
             }

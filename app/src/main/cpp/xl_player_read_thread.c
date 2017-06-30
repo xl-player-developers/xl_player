@@ -27,7 +27,7 @@ void *read_thread(void *data) {
         if (pd->seeking == 1) {
             pd->seeking = 2;
             flush_packet_queue(pd);
-            int seek_ret = av_seek_frame(pd->pFormatCtx, -1, (int64_t) (pd->seek_to * AV_TIME_BASE),
+            int seek_ret = av_seek_frame(pd->format_context, -1, (int64_t) (pd->seek_to * AV_TIME_BASE),
                                          AVSEEK_FLAG_BACKWARD);
             if (seek_ret < 0) {
                 LOGE("seek faild");
@@ -45,13 +45,13 @@ void *read_thread(void *data) {
             packet = xl_packet_pool_get_packet(pd->packet_pool);
         }
         // read data to packet
-        ret = av_read_frame(pd->pFormatCtx, packet);
+        ret = av_read_frame(pd->format_context, packet);
         if (ret == 0) {
-            if (packet->stream_index == pd->videoIndex) {
+            if (packet->stream_index == pd->video_index) {
                 xl_packet_queue_put(pd->video_packet_queue, packet);
                 pd->statistics->bytes += packet->size;
                 packet = NULL;
-            } else if (packet->stream_index == pd->audioIndex) {
+            } else if (packet->stream_index == pd->audio_index) {
                 xl_packet_queue_put(pd->audio_packet_queue, packet);
                 pd->statistics->bytes += packet->size;
                 packet = NULL;
