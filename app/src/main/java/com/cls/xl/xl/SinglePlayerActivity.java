@@ -48,7 +48,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                     videoSeekBar.setProgress(videoProNow);
                     handler.sendEmptyMessageDelayed(1, 1000);
                     XLPlayer.Statistics st = xlPlayer.getStatistics();
-                    System.out.println("fps = " + st.getFps() + " , bps = " + st.getFormatBps() + ", buffer = " + st.getBufferLength() + "ms");
+//                    System.out.println("fps = " + st.getFps() + " , bps = " + st.getFormatBps() + ", buffer = " + st.getBufferLength() + "ms");
                     break;
             }
         }
@@ -64,19 +64,17 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
         mGLSurfaceView = (SurfaceView) findViewById(R.id.m_xlsurface);
         mGLSurfaceView.setOnTouchListener(playerViewTouchListener);
         mGLSurfaceView.setKeepScreenOn(true);
-        mGLSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+        mGLSurfaceView.getHolder().addCallback(new BaseHolderCallback(){
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                super.surfaceCreated(holder);
                 xlPlayer.setSurface(mGLSurfaceView.getHolder().getSurface());
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                System.out.println("surfaceDestroyed");
+                super.surfaceChanged(holder, format, width, height);
+                xlPlayer.resize(width,height);
             }
         });
         videoSeekBar = (SeekBar) findViewById(R.id.video_progress);
