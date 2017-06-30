@@ -323,7 +323,7 @@ void xl_player_seek(xl_play_data *pd, float seek_to) {
 }
 
 void xl_player_set_play_background(xl_play_data *pd, bool play_background) {
-    if (pd->just_audio) {
+    if (pd->just_audio && (pd->av_track_flags & XL_HAS_VIDEO_FLAG)) {
         if (pd->is_sw_decode) {
             avcodec_flush_buffers(pd->pVideoCodecCtx);
         } else {
