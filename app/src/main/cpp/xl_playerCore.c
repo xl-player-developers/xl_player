@@ -16,6 +16,7 @@
 #include "xl_utils/xl_jni_reflect.h"
 #include "xl_audio/xl_audio_filter.h"
 #include "xl_utils/xl_statistics.h"
+static int stop(xl_play_data *pd);
 
 static void send_message(xl_play_data * pd, int message){
     int sig = message;
@@ -30,7 +31,7 @@ static int message_callback(int fd, int events, void *data){
         LOGI("recieve message ==> %d", message);
         switch(message){
             case xl_message_stop:
-                xl_player_stop(pd);
+                stop(pd);
                 break;
             case xl_message_buffer_empty:
                 change_status(pd, BUFFER_EMPTY);
@@ -296,6 +297,38 @@ int xl_player_play(const char *url, float time, xl_play_data *pd) {
     return ret;
 }
 
+void xl_player_set_buffer_time(xl_play_data *pd, float buffer_time){
+    pd->buffer_time_length = buffer_time;
+    if(pd->status != IDEL){
+        set_buffer_time(pd);
+    }
+}
+
+int xl_player_resume(xl_play_data * pd){
+    pd->change_status(pd, PLAYING);
+    pd->audio_ctx->play(pd);
+    return 0;
+}
+
+void xl_player_seek(xl_play_data * pd, float seek_to){
+    float total_time = (float) pd->pFormatCtx->duration / AV_TIME_BASE;
+    seek_to = seek_to >= 0 ? seek_to : 0;
+    seek_to = seek_to <= total_time ? seek_to : total_time;
+    pd->seek_to = seek_to;
+    pd->seeking = 1;
+}
+
+void xl_player_set_play_background(xl_play_data * pd, bool play_background){
+    if(pd->just_audio){
+        if(pd->is_sw_decode){
+            avcodec_flush_buffers(pd->pVideoCodecCtx);
+        }else{
+            xl_mediacodec_flush(pd);
+        }
+    }
+    pd->just_audio = play_background;
+}
+
 static inline void clean_queues(xl_play_data *pd) {
     AVPacket *packet;
     // clear pd->audio_frame audio_frame_queue  audio_packet_queue
@@ -352,44 +385,7 @@ static inline void clean_queues(xl_play_data *pd) {
     }
 }
 
-void xl_player_set_buffer_time(xl_play_data *pd, float buffer_time){
-    pd->buffer_time_length = buffer_time;
-    if(pd->status != IDEL){
-        set_buffer_time(pd);
-    }
-}
-
-int xl_player_resume(xl_play_data * pd){
-    pd->change_status(pd, PLAYING);
-    pd->audio_ctx->play(pd);
-    return 0;
-}
-
-void xl_player_seek(xl_play_data * pd, float seek_to){
-    float total_time = (float) pd->pFormatCtx->duration / AV_TIME_BASE;
-    seek_to = seek_to >= 0 ? seek_to : 0;
-    seek_to = seek_to <= total_time ? seek_to : total_time;
-    pd->seek_to = seek_to;
-    pd->seeking = 1;
-}
-
-void xl_player_set_play_background(xl_play_data * pd, bool play_background){
-    if(pd->just_audio){
-        if(pd->is_sw_decode){
-            avcodec_flush_buffers(pd->pVideoCodecCtx);
-        }else{
-            xl_mediacodec_flush(pd);
-        }
-    }
-    pd->just_audio = play_background;
-}
-
-int xl_player_stop(xl_play_data *pd) {
-    if (pd == NULL || pd->status == IDEL) return 0;
-    // 如果不是播放结束的话   就是用户点了结束
-    if (!pd->eof) {
-        pd->error_code = -1;
-    }
+static int stop(xl_play_data *pd){
     // remove buffer call back
     pd->audio_packet_queue->empty_cb = NULL;
     pd->audio_packet_queue->full_cb = NULL;
@@ -425,6 +421,11 @@ int xl_player_stop(xl_play_data *pd) {
     return 0;
 }
 
+int xl_player_stop(xl_play_data *pd) {
+    if (pd == NULL || pd->status == IDEL) return 0;
+    pd->error_code = -1;
+    return stop(pd);
+}
 
 int xl_player_release(xl_play_data *pd) {
     if (pd->status != IDEL) {
