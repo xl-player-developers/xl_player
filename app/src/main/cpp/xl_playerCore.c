@@ -49,7 +49,7 @@ static int message_callback(int fd, int events, void *data) {
 
 static void buffer_empty_cb(void *data) {
     xl_play_data *pd = data;
-    if (pd->status != BUFFER_EMPTY) {
+    if (pd->status != BUFFER_EMPTY && !pd->eof) {
         pd->send_message(pd, xl_message_buffer_empty);
     }
 }

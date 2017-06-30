@@ -55,6 +55,7 @@ void *read_thread(void *data) {
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
         }else if(ret == AVERROR_EOF){
             pd->eof = true;
+            pd->send_message(pd,xl_message_buffer_full);
             break;
         }else{
             // error

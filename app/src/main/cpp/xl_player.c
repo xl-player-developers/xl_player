@@ -20,8 +20,9 @@ static inline void changeModel(ModelType modelType) {
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_initPlayer(JNIEnv *env, jobject instance,
                                                               jobject xlPlayer, jobject manager,
-                                                              jint runAndroidVersion,jint bestSampleRate) {
-    pd = xl_player_create(env, xlPlayer, runAndroidVersion,bestSampleRate);
+                                                              jint runAndroidVersion,
+                                                              jint bestSampleRate) {
+    pd = xl_player_create(env, xlPlayer, runAndroidVersion, bestSampleRate);
     if (env && manager) {
         pAAssetManager = AAssetManager_fromJava(env, manager);
     } else {
@@ -84,7 +85,7 @@ float getCurrentTime() {
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_seek(JNIEnv *env, jobject instance, jfloat time,
                                                         jboolean isSeekTo) {
-    if(pd && pd->status != IDEL) {
+    if (pd && pd->status != IDEL) {
         if (isSeekTo) {
             xl_player_seek(pd, time);
         } else {
@@ -233,26 +234,29 @@ Java_com_xl_media_library_base_BaseNativeInterface_getHeadTrackerEnable(JNIEnv *
     return false;
 }
 
-static void write_int_to_buffer(uint8_t * buf, int val){
+static void write_int_to_buffer(uint8_t *buf, int val) {
     buf[0] = (uint8_t) ((val >> 24) & 0xff);
     buf[1] = (uint8_t) ((val >> 16) & 0xff);
     buf[2] = (uint8_t) ((val >> 8) & 0xff);
     buf[3] = (uint8_t) (val & 0xff);
 }
+
 JNIEXPORT jobject JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_getStatistics(JNIEnv *env, jclass type) {
-    if (pd != NULL && pd->statistics != NULL) {
-        if(pd->statistics->last_update_time > 0){
+    if (pd != NULL && pd->status != IDEL && pd->statistics != NULL) {
+        if (pd->statistics->last_update_time > 0) {
             int fps = xl_statistics_get_fps(pd->statistics);
             int bps = xl_statistics_get_bps(pd->statistics);
             int buffer_time = 0;
             AVRational time_base;
-            if(pd->av_track_flags & XL_HAS_VIDEO_FLAG){
+            if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
                 time_base = pd->pFormatCtx->streams[pd->videoIndex]->time_base;
-                buffer_time = (int)((double)pd->video_packet_queue->duration * 1000 * av_q2d(time_base));
-            }else{
+                buffer_time = (int) ((double) pd->video_packet_queue->duration * 1000 *
+                                     av_q2d(time_base));
+            } else {
                 time_base = pd->pFormatCtx->streams[pd->audioIndex]->time_base;
-                buffer_time = (int)((double)pd->audio_packet_queue->duration * 1000 * av_q2d(time_base));
+                buffer_time = (int) ((double) pd->audio_packet_queue->duration * 1000 *
+                                     av_q2d(time_base));
             }
             write_int_to_buffer(pd->statistics->ret_buffer, fps);
             write_int_to_buffer(pd->statistics->ret_buffer + 4, bps);
@@ -267,7 +271,7 @@ Java_com_xl_media_library_base_BaseNativeInterface_getStatistics(JNIEnv *env, jc
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_setBufferTime(JNIEnv *env, jclass type,
                                                                  jfloat time) {
-    if(pd){
+    if (pd) {
         xl_player_set_buffer_time(pd, time);
     }
 }
@@ -275,7 +279,7 @@ Java_com_xl_media_library_base_BaseNativeInterface_setBufferTime(JNIEnv *env, jc
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_setPlayBackground(JNIEnv *env, jclass type,
                                                                      jboolean playBackground) {
-    if(pd){
+    if (pd) {
         xl_player_set_play_background(pd, playBackground);
     }
 }
