@@ -77,6 +77,7 @@ public class MultiPlayerActivity extends Activity {
                         @Override
                         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
                             player.stopVideo();
+                            holder.xlPlayerView.setSurfaceTextureListener(null);
                             return true;
                         }
 
