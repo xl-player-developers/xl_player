@@ -31,6 +31,7 @@ public class SimpleVideoActivity extends Activity {
 
     void initData() {
         videoUrls.put("TestVR", "http://cache.utovr.com/604b657d08cb4c60963ad3582aa8074a/L2_wixzbeossojxw88a.mp4");
+        videoUrls.put("rtmp", "rtmp://192.168.1.207:11935/live/biandroid");
         videoUrls.put("Android screens (Matroska)", "http://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv");
         videoUrls.put("Google Glass (WebM Video with Vorbis Audio)", "http://demos.webmproject.org/exoplayer/glass_vp9_vorbis.webm");
         videoUrls.put("Google Glass (VP9 in MP4/ISO-BMFF)", "http://demos.webmproject.org/exoplayer/glass.mp4");

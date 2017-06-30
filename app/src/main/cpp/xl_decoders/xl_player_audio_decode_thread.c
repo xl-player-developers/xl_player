@@ -41,6 +41,11 @@ void * audio_decode_thread(void * data){
                     pd->audio_player_ctx->play(pd);
                 }
 
+            }else{
+                char err[128];
+                av_strerror(add_ret, err, 127);
+                err[127] = 0;
+                LOGE("add to audio filter error ==>\n %s", err);
             }
             pthread_mutex_unlock(ctx->filter_lock);
 

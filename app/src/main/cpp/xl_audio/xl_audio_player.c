@@ -149,6 +149,8 @@ xl_audio_player_context *xl_audio_engine_create() {
     ctx->player_create = xl_audio_player_create;
     ctx->get_delta_time = get_delta_time;
     ctx->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    ctx->buffer_size = 0;
+    ctx->buffer = NULL;
     pthread_mutex_init(ctx->lock, NULL);
     return ctx;
 }
