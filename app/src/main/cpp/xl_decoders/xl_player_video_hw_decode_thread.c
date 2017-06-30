@@ -11,7 +11,7 @@
 #include "../xl_container/xl_frame_pool.h"
 #include "../xl_container/xl_frame_queue.h"
 
-void static inline drop_video_packet(xl_play_data * pd){
+static inline int drop_video_packet(xl_play_data * pd){
     AVPacket * packet = xl_packet_queue_get(pd->video_packet_queue);
     if(packet != NULL){
         if (packet != &pd->video_packet_queue->flush_packet){
@@ -28,8 +28,12 @@ void static inline drop_video_packet(xl_play_data * pd){
             xl_mediacodec_flush(pd);
         }
     }else{
+        if(pd->eof){
+            return -1;
+        }
         usleep(NULL_LOOP_SLEEP_US);
     }
+    return 0;
 }
 
 void * video_decode_hw_thread(void * data){
@@ -42,8 +46,10 @@ void * video_decode_hw_thread(void * data){
     AVFrame * frame = xl_frame_pool_get_frame(pd->video_frame_pool);
     while (pd->error_code == 0) {
         if(pd->just_audio){
-            // 如果之播放音频  按照音视频同步的速度丢包
-            drop_video_packet(pd);
+            // 如果只播放音频  按照音视频同步的速度丢包
+            if( -1 == drop_video_packet(pd)){
+                break;
+            }
         }else{
             ret = xl_mediacodec_receive_frame(pd, frame);
             if (ret == 0) {
