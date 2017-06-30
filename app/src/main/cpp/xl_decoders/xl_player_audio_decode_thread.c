@@ -37,7 +37,10 @@ void * audio_decode_thread(void * data){
                     frame = xl_frame_pool_get_frame(pd->audio_frame_pool);
                 }
                 // 触发音频播放
-                pd->audio_ctx->play(pd);
+                if (pd->av_track_flags & XL_HAS_AUDIO_FLAG){
+                    pd->audio_ctx->play(pd);
+                }
+
             }
             pthread_mutex_unlock(ctx->filter_lock);
 

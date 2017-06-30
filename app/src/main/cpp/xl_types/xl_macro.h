@@ -6,6 +6,7 @@
 #define XL_XL_RENAME_H
 
 #include <android/log.h>
+
 #define LOGI(format, ...) __android_log_print(ANDROID_LOG_INFO, "(^_^)", format, ##__VA_ARGS__)
 #define LOGE(format, ...) __android_log_print(ANDROID_LOG_ERROR, "(>_<)", format, ##__VA_ARGS__)
 
@@ -15,6 +16,8 @@
 #define xl_message_buffer_empty 2
 #define xl_message_buffer_full 3
 
+#define default_buffer_size 1024*1024*5
+#define default_buffer_time 5.0f
 
 // 100 ms
 #define NULL_LOOP_SLEEP_US 100000

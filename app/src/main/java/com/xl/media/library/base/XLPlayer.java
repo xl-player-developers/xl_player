@@ -215,6 +215,30 @@ public class XLPlayer {
         BaseNativeInterface.setPlayBackground(playBackground);
     }
 
+    /**
+     * 设置缓存时长,单位:秒
+     * 默认5s
+     * buffer time 和 buffer size 任意一个满了就停止读取数据
+     *
+     * @param seconds 缓存时长
+     */
+    public void setBufferTime(float seconds) {
+        BaseNativeInterface.setBufferTime(seconds);
+    }
+
+
+    /**
+     * 设置缓存大小,单位:字节
+     * 默认5MB
+     * buffer time 和 buffer size 任意一个满了就停止读取数据
+     *
+     * @param bytes 缓存大小
+     */
+    public void setBufferSize(int bytes) {
+        BaseNativeInterface.setBufferSize(bytes);
+    }
+
+    @SuppressWarnings("unused")
     void onPlayStatusChanged(int status) {
         switch (status) {
             case 0:

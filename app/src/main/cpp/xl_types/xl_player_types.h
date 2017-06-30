@@ -96,6 +96,7 @@ typedef struct struct_xl_packet_queue {
     int readIndex;
     int writeIndex;
     int count;
+    int total_bytes;
     unsigned int size;
     uint64_t duration;
     uint64_t max_duration;
@@ -159,6 +160,12 @@ typedef struct struct_xl_play_data {
     int best_samplerate;
     jobject *xlPlayer;
     xl_java_class *jc;
+
+    //用户设置
+    int buffer_size_max;
+    float buffer_time_length;
+    bool force_sw_decode;
+
     PlayStatus status;
     pthread_t read_stream_thread;
     pthread_t audio_decode_thread;
@@ -171,8 +178,6 @@ typedef struct struct_xl_play_data {
     xl_pakcet_pool *packet_pool;
     int frame_rotation;
     int videoIndex, audioIndex;
-    // 缓存时长
-    float buffer_time_length;
     // 统计
     xl_statistics *statistics;
 
@@ -213,8 +218,6 @@ typedef struct struct_xl_play_data {
 
     // 是否软解
     bool is_sw_decode;
-
-    bool force_sw_decode;
 
     // SEEK
     float seek_to;

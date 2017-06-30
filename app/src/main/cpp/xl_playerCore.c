@@ -80,7 +80,6 @@ static void reset(xl_play_data *pd) {
     xl_clock_reset(pd->video_clock);
     xl_statistics_reset(pd->statistics);
     pd->error_code = 0;
-    pd->buffer_time_length = 5.0f;
     pd->frame_rotation = XL_ROTATION_0;
     xl_packet_pool_reset(pd->packet_pool);
     pd->change_status(pd, IDEL);
@@ -105,7 +104,6 @@ static inline void set_buffer_time(xl_play_data *pd) {
         pd->video_packet_queue->full_cb = buffer_full_cb;
         pd->video_packet_queue->cb_data = pd;
     }
-
 }
 
 xl_play_data *
@@ -117,6 +115,9 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
     xl_jni_reflect_java_class(&pd->jc, pd->jniEnv);
     pd->run_android_version = run_android_version;
     pd->best_samplerate = best_samplerate;
+    pd->buffer_size_max = default_buffer_size;
+    pd->buffer_time_length = default_buffer_time;
+    pd->force_sw_decode = false;
     pd->audio_packet_queue = xl_queue_create(100);
     pd->video_packet_queue = xl_queue_create(100);
     pd->video_frame_pool = xl_frame_pool_create(6);
@@ -142,6 +143,7 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
     }
     pd->change_status = change_status;
     pd->send_message = send_message;
+
     reset(pd);
     return pd;
 }
@@ -308,9 +310,15 @@ void xl_player_set_buffer_time(xl_play_data *pd, float buffer_time) {
     }
 }
 
+void xl_player_set_buffer_size(xl_play_data *pd, int buffer_size) {
+    pd->buffer_size_max = buffer_size;
+}
+
 int xl_player_resume(xl_play_data *pd) {
     pd->change_status(pd, PLAYING);
-    pd->audio_ctx->play(pd);
+    if (pd->av_track_flags & XL_HAS_AUDIO_FLAG) {
+        pd->audio_ctx->play(pd);
+    }
     return 0;
 }
 

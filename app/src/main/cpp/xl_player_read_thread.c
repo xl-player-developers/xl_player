@@ -8,7 +8,7 @@
 #include "xl_container/xl_packet_queue.h"
 #include "xl_container/xl_packet_pool.h"
 
-static inline void flush_packet_queue(xl_play_data *pd){
+static inline void flush_packet_queue(xl_play_data *pd) {
     if (pd->av_track_flags & XL_HAS_VIDEO_FLAG) {
         xl_packet_queue_flush(pd->video_packet_queue, pd->packet_pool);
     }
@@ -28,18 +28,25 @@ void *read_thread(void *data) {
             pd->seeking = 2;
             flush_packet_queue(pd);
             int seek_ret = av_seek_frame(pd->pFormatCtx, -1, (int64_t) (pd->seek_to * AV_TIME_BASE),
-                                     AVSEEK_FLAG_BACKWARD);
+                                         AVSEEK_FLAG_BACKWARD);
             if (seek_ret < 0) {
                 LOGE("seek faild");
             }
         }
+        if (pd->audio_packet_queue->total_bytes + pd->video_packet_queue->total_bytes >=
+            pd->buffer_size_max) {
+            if (pd->status == BUFFER_EMPTY) {
+                pd->send_message(pd, xl_message_buffer_full);
+            }
+            usleep(NULL_LOOP_SLEEP_US);
+        }
         // get a new packet from pool
-        if(packet == NULL){
+        if (packet == NULL) {
             packet = xl_packet_pool_get_packet(pd->packet_pool);
         }
         // read data to packet
         ret = av_read_frame(pd->pFormatCtx, packet);
-        if(ret == 0){
+        if (ret == 0) {
             if (packet->stream_index == pd->videoIndex) {
                 xl_packet_queue_put(pd->video_packet_queue, packet);
                 pd->statistics->bytes += packet->size;
@@ -48,16 +55,18 @@ void *read_thread(void *data) {
                 xl_packet_queue_put(pd->audio_packet_queue, packet);
                 pd->statistics->bytes += packet->size;
                 packet = NULL;
-            }else{
+            } else {
                 av_packet_unref(packet);
             }
-        }else if(ret == AVERROR_INVALIDDATA){
+        } else if (ret == AVERROR_INVALIDDATA) {
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
-        }else if(ret == AVERROR_EOF){
+        } else if (ret == AVERROR_EOF) {
             pd->eof = true;
-            pd->send_message(pd,xl_message_buffer_full);
+            if (pd->status == BUFFER_EMPTY) {
+                pd->send_message(pd, xl_message_buffer_full);
+            }
             break;
-        }else{
+        } else {
             // error
             pd->error_code = ret;
             LOGE("read file error. error code ==> %d", ret);

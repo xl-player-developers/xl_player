@@ -275,11 +275,20 @@ Java_com_xl_media_library_base_BaseNativeInterface_setBufferTime(JNIEnv *env, jc
         xl_player_set_buffer_time(pd, time);
     }
 }
-
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_setPlayBackground(JNIEnv *env, jclass type,
                                                                      jboolean playBackground) {
     if (pd) {
         xl_player_set_play_background(pd, playBackground);
     }
+}
+
+JNIEXPORT void JNICALL
+Java_com_xl_media_library_base_BaseNativeInterface_setBufferSize(JNIEnv *env, jclass type,
+                                                                 jint numByte) {
+
+    if (pd) {
+        xl_player_set_buffer_size(pd, numByte);
+    }
+
 }

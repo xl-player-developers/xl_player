@@ -23,6 +23,8 @@ class BaseNativeInterface {
 
     native static void setBufferTime(float time);
 
+    native static void setBufferSize(int numByte);
+
     native static void setPlayBackground(boolean playBackground);
 
     native static void setForceSwDecode(boolean forceSwDecode);
