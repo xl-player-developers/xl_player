@@ -92,7 +92,7 @@ void * video_decode_hw_thread(void * data){
             }else if(ret == -2) {
                 //frame = xl_frame_pool_get_frame(pd->video_frame_pool);
             }else {
-                pd->error_code = 501;
+                pd->on_error(pd, 501);
                 break;
             }
         }

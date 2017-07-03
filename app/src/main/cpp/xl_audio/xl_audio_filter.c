@@ -55,7 +55,7 @@ void xl_audio_filter_change_speed(xl_play_data *pd, float speed) {
     int out_sample_rates[] = {0, -1};
     out_sample_rates[0] = pd->best_samplerate;
     int out_sample_channel_count[] = {1, -1};
-    int channels = dec_ctx->channels <= 2 ? dec_ctx->channels : 2;
+    int channels = ctx->channels <= 2 ? ctx->channels : 2;
     out_sample_channel_count[0] = channels;
     int64_t out_channel_layouts[] = {AV_CH_LAYOUT_MONO, -1};
     if (channels == 2) {
@@ -67,8 +67,8 @@ void xl_audio_filter_change_speed(xl_play_data *pd, float speed) {
     snprintf(args, sizeof(args),
              "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channels=%d:channel_layout=0x%"PRIx64,
              time_base.num, time_base.den, dec_ctx->sample_rate,
-             av_get_sample_fmt_name(dec_ctx->sample_fmt), dec_ctx->channels,
-             dec_ctx->channel_layout);
+             av_get_sample_fmt_name(dec_ctx->sample_fmt), ctx->channels,
+             ctx->channel_layout);
     avfilter_graph_create_filter(&ctx->buffersrc_ctx, ctx->abuffersrc, "in", args, NULL,
                                  ctx->filter_graph);
     avfilter_graph_create_filter(&ctx->buffersink_ctx, ctx->abuffersink, "out", NULL, NULL,

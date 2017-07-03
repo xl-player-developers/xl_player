@@ -18,6 +18,7 @@
 #include "xl_utils/xl_statistics.h"
 
 static int stop(xl_play_data *pd);
+static void on_error(xl_play_data *pd);
 
 static void send_message(xl_play_data *pd, int message) {
     int sig = message;
@@ -40,11 +41,19 @@ static int message_callback(int fd, int events, void *data) {
             case xl_message_buffer_full:
                 change_status(pd, BUFFER_FULL);
                 break;
+            case xl_message_error:
+                on_error(pd);
+                break;
             default:
                 break;
         }
     }
     return 1;
+}
+
+static void on_error_cb(xl_play_data * pd, int error_code){
+    pd->error_code = error_code;
+    pd->send_message(pd, xl_message_error);
 }
 
 static void buffer_empty_cb(void *data) {
@@ -74,6 +83,7 @@ static void reset(xl_play_data *pd) {
     pd->audio_frame = NULL;
     pd->video_frame = NULL;
     pd->seeking = 0;
+    pd->timeout_start = 0;
     xl_clock_reset(pd->audio_clock);
     xl_clock_reset(pd->video_clock);
     xl_statistics_reset(pd->statistics);
@@ -116,6 +126,7 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
     pd->buffer_size_max = default_buffer_size;
     pd->buffer_time_length = default_buffer_time;
     pd->force_sw_decode = false;
+    pd->read_timeout = default_read_timeout;
     pd->audio_packet_queue = xl_queue_create(100);
     pd->video_packet_queue = xl_queue_create(100);
     pd->video_frame_pool = xl_frame_pool_create(6);
@@ -141,7 +152,7 @@ xl_player_create(JNIEnv *env, jobject instance, int run_android_version, int bes
     }
     pd->change_status = change_status;
     pd->send_message = send_message;
-
+    pd->on_error = on_error_cb;
     reset(pd);
     return pd;
 }
@@ -164,6 +175,8 @@ static int audio_codec_init(xl_play_data *pd) {
     // Android openSL ES   can not support more than 2 channels.
     int channels = pd->audio_codec_ctx->channels <= 2 ? pd->audio_codec_ctx->channels : 2;
     pd->audio_player_ctx->player_create(pd->best_samplerate, channels, pd);
+    pd->audio_filter_ctx->channels = pd->audio_codec_ctx->channels;
+    pd->audio_filter_ctx->channel_layout = pd->audio_codec_ctx->channel_layout;
     xl_audio_filter_change_speed(pd, 1.0);
     return 0;
 }
@@ -194,9 +207,27 @@ static int hw_codec_init(xl_play_data *pd) {
     return 0;
 }
 
+static int av_format_interrupt_cb(void * data){
+    xl_play_data *pd = data;
+    if(pd->timeout_start == 0){
+        pd->timeout_start = xl_clock_get_current_time();
+        return 0;
+    }else{
+        uint64_t time_use = xl_clock_get_current_time() - pd->timeout_start;
+        if(time_use > pd->read_timeout * 1000000){
+            pd->on_error(pd, -2);
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+}
+
 int xl_player_play(const char *url, float time, xl_play_data *pd) {
     int i, ret;
     pd->format_context = avformat_alloc_context();
+    pd->format_context->interrupt_callback.callback = av_format_interrupt_cb;
+    pd->format_context->interrupt_callback.opaque = pd;
     if (avformat_open_input(&pd->format_context, url, NULL, NULL) != 0) {
         LOGE("can not open url\n");
         ret = 100;
@@ -472,6 +503,11 @@ void change_status(xl_play_data *pd, PlayStatus status) {
     }
     (*pd->jniEnv)->CallVoidMethod(pd->jniEnv, pd->xlPlayer, pd->jc->player_onPlayStatusChanged,
                                   status);
+}
+
+static void on_error(xl_play_data *pd){
+    (*pd->jniEnv)->CallVoidMethod(pd->jniEnv, pd->xlPlayer, pd->jc->player_onPlayError,
+                                  pd->error_code);
 }
 
 void change_audio_speed(float speed, xl_play_data *pd) {

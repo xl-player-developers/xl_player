@@ -16,12 +16,15 @@
 #define XL_HAS_VIDEO_FLAG 0x2
 //#define XL_HAS_SUBTITLE_FLAG 0x4
 
+
 #define xl_message_stop 1
 #define xl_message_buffer_empty 2
 #define xl_message_buffer_full 3
+#define xl_message_error 999
 
 #define default_buffer_size 1024*1024*5
 #define default_buffer_time 5.0f
+#define default_read_timeout 3.0f
 
 // 100 ms
 #define NULL_LOOP_SLEEP_US 100000

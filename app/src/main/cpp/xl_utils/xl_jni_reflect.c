@@ -9,6 +9,8 @@ void xl_jni_reflect_java_class(xl_java_class ** p_jc, JNIEnv *jniEnv) {
     jclass xlPlayerClass = (*jniEnv)->FindClass(jniEnv, "com/xl/media/library/base/XLPlayer");
     jc->player_onPlayStatusChanged = (*jniEnv)->GetMethodID(jniEnv, xlPlayerClass,
                                                      "onPlayStatusChanged", "(I)V");
+    jc->player_onPlayError = (*jniEnv)->GetMethodID(jniEnv, xlPlayerClass,
+                                                     "onPlayError", "(I)V");
 //    jc->XLPlayer_class = (*jniEnv)->NewGlobalRef(jniEnv, xlPlayerClass);
     (*jniEnv)->DeleteLocalRef(jniEnv, xlPlayerClass);
 

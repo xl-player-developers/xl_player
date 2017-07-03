@@ -47,6 +47,7 @@ void *read_thread(void *data) {
         // read data to packet
         ret = av_read_frame(pd->format_context, packet);
         if (ret == 0) {
+            pd->timeout_start = 0;
             if (packet->stream_index == pd->video_index) {
                 xl_packet_queue_put(pd->video_packet_queue, packet);
                 pd->statistics->bytes += packet->size;
@@ -59,6 +60,7 @@ void *read_thread(void *data) {
                 av_packet_unref(packet);
             }
         } else if (ret == AVERROR_INVALIDDATA) {
+            pd->timeout_start = 0;
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
         } else if (ret == AVERROR_EOF) {
             pd->eof = true;
@@ -68,7 +70,7 @@ void *read_thread(void *data) {
             break;
         } else {
             // error
-            pd->error_code = ret;
+            pd->on_error(pd, ret);
             LOGE("read file error. error code ==> %d", ret);
             break;
         }

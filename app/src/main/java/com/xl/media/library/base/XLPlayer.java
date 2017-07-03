@@ -277,4 +277,8 @@ public class XLPlayer {
 
         oldStatus = status;
     }
+
+    void onPlayError(int error){
+        System.out.println(error);
+    }
 }

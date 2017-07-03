@@ -26,6 +26,11 @@ void * audio_decode_thread(void * data){
         ret = avcodec_receive_frame(pd->audio_codec_ctx, decode_frame);
         if (ret == 0) {
             pthread_mutex_lock(ctx->filter_lock);
+            // with some rtmp stream, audio codec context -> channels / channel_layout will be changed to a wrong value by avcodec_send_packet==>apply_param_change, may be  it is a rtmp bug.
+            // todo : find a better way to fix this problem
+            // 播放一些rtmp流时,audio codec context 里面的channels 和 channel_layout 属性会被avcodec_send_packet==>apply_param_change函数更改成一个错误值，可能时rtmp封装的bug
+            decode_frame->channels = ctx->channels;
+            decode_frame->channel_layout = ctx->channel_layout;
             int add_ret = av_buffersrc_add_frame(ctx->buffersrc_ctx, decode_frame);
             if(add_ret >= 0){
                 while(1){
@@ -70,14 +75,14 @@ void * audio_decode_thread(void * data){
             ret = avcodec_send_packet(pd->audio_codec_ctx, packet);
             xl_packet_pool_unref_packet(pd->packet_pool, packet);
             if (ret < 0) {
-                pd->error_code = 3001;
+                pd->on_error(pd, 3001);
                 break;
             }
         } else if (ret == AVERROR(EINVAL)) {
-            pd->error_code = 3002;
+            pd->on_error(pd, 3002);
             break;
         } else {
-            pd->error_code = 3003;
+            pd->on_error(pd, 3003);
             break;
         }
     }

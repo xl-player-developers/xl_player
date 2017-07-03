@@ -26,6 +26,7 @@ struct struct_xl_play_data;
 typedef struct struct_xl_java_class {
 //    jclass XLPlayer_class;
     jmethodID player_onPlayStatusChanged;
+    jmethodID player_onPlayError;
 
     jclass HwDecodeBridge;
     jmethodID codec_init;
@@ -68,6 +69,8 @@ typedef struct struct_xl_audio_filter_context {
 //    AVFilterLink *outlink;
     AVFilterInOut *outputs, *inputs;
     pthread_mutex_t *filter_lock;
+    int channels;
+    uint64_t channel_layout;
 } xl_audio_filter_context;
 
 typedef struct struct_xl_packet_pool {
@@ -168,6 +171,7 @@ typedef struct struct_xl_play_data {
     int buffer_size_max;
     float buffer_time_length;
     bool force_sw_decode;
+    float read_timeout;
 
     // 播放器状态
     PlayStatus status;
@@ -183,6 +187,7 @@ typedef struct struct_xl_play_data {
     int video_index, audio_index;
     //是否有 音频0x1 视频0x2 字幕0x4
     uint8_t av_track_flags;
+    uint64_t timeout_start;
 
     // packet容器
     xl_packet_queue *video_packet_queue, *audio_packet_queue;
@@ -231,6 +236,7 @@ typedef struct struct_xl_play_data {
 
     // error code
     // -1 stop by user
+    // -2 read stream time out
     // 1xx init
     // 2xx format and stream
     // 3xx audio decode
@@ -250,5 +256,7 @@ typedef struct struct_xl_play_data {
     void (*send_message)(struct struct_xl_play_data *pd, int message);
 
     void (*change_status)(struct struct_xl_play_data *pd, PlayStatus status);
+
+    void (*on_error)(struct struct_xl_play_data * pd, int error_code);
 } xl_play_data;
 #endif //XL_XL_PLAYER_TYPES_H

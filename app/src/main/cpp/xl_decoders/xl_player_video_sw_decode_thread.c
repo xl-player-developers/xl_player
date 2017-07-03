@@ -75,14 +75,14 @@ void * video_decode_sw_thread(void * data){
                 ret = avcodec_send_packet(pd->video_codec_ctx, packet);
                 xl_packet_pool_unref_packet(pd->packet_pool, packet);
                 if (ret < 0) {
-                    pd->error_code = 4101;
+                    pd->on_error(pd, 4101);
                     break;
                 }
             } else if (ret == AVERROR(EINVAL)) {
-                pd->error_code = 4102;
+                pd->on_error(pd, 4102);
                 break;
             } else {
-                pd->error_code = 4103;
+                pd->on_error(pd, 4103);
                 break;
             }
         }
