@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set(lib_src_DIR ${CMAKE_SOURCE_DIR}/../jni_libs/${ANDROID_ABI})
+set(lib_src_DIR ${CMAKE_SOURCE_DIR}/ff_libs/${ANDROID_ABI})
 include_directories(${CMAKE_SOURCE_DIR}/../jni_include)
 
 MESSAGE(STATUS "biandroid +  ${ANDROID_ABI}" )
@@ -16,6 +16,9 @@ set_target_properties(avutil PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libavut
 
 add_library(avfilter SHARED IMPORTED)
 set_target_properties(avfilter PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libavfilter-6.so)
+
+add_library(swresample SHARED IMPORTED)
+set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libswresample-2.so)
 
 add_library(
              xl_render
@@ -107,7 +110,7 @@ find_library(bmp jnigraphics)
 find_library(glesv2-lib GLESv2)
 find_library(egl-lib EGL)
 find_library(sles-lib OpenSLES)
-
+MESSAGE(STATUS "biandroid +  ${CMAKE_SYSTEM_VERSION}" )
 if (${CMAKE_SYSTEM_VERSION} MATCHES "21")
     find_library(media-ndk mediandk)
     target_link_libraries(
@@ -117,6 +120,7 @@ if (${CMAKE_SYSTEM_VERSION} MATCHES "21")
                            avformat
                            avutil
                            avfilter
+                           swresample
                            ${log-lib}
                            ${bmp}
                            ${android-lib}
@@ -133,6 +137,7 @@ else (${CMAKE_SYSTEM_VERSION} LESS "21")
                            avformat
                            avutil
                            avfilter
+                           swresample
                            ${log-lib}
                            ${bmp}
                            ${android-lib}

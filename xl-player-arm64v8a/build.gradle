@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.3'
     sourceSets {
         main {
-            jniLibs.srcDirs = ["../jni_libs"]
+            jniLibs.srcDirs = ['ff_libs']
         }
     }
     defaultConfig {
@@ -36,4 +36,5 @@ android {
 }
 
 dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
