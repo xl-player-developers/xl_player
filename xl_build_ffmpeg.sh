@@ -3,23 +3,8 @@
 set -e
 
 # Set your own NDK here
-#NDK=~/android-ndk-r10e
-NDK=/Users/tianchi/Library/Android/sdk/ndk-bundle
-
-ARM_PLATFORM=$NDK/platforms/android-16/arch-arm/
-ARM_PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64
-
-ARM64_PLATFORM=$NDK/platforms/android-21/arch-arm64/
-ARM64_PREBUILT=$NDK/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64
-
-X86_PLATFORM=$NDK/platforms/android-16/arch-x86/
-X86_PREBUILT=$NDK/toolchains/x86-4.9/prebuilt/darwin-x86_64
-
-X86_64_PLATFORM=$NDK/platforms/android-21/arch-x86_64/
-X86_64_PREBUILT=$NDK/toolchains/x86_64-4.9/prebuilt/darwin-x86_64
-
-MIPS_PLATFORM=$NDK/platforms/android-9/arch-mips/
-MIPS_PREBUILT=$NDK/toolchains/mipsel-linux-android-4.8/prebuilt/darwin-x86_64
+NDK=/home/tianchi/Android/Sdk/ndk-bundle
+OS=linux-x86_64
 
 BUILD_DIR=`pwd`/android-ffmpeg-lib
 
@@ -42,17 +27,31 @@ cp configure configure.bak
 sed_version=`sed --version`
 if [[ $sed_version =~ "GNU" ]]
 then
-    sed -i "s#^SLIBNAME_WITH_MAJOR=\'\$(SLIBNAME).\$(LIBMAJOR)\'#SLIBNAME_WITH_MAJOR=\'\$(SLIBPREF)\$(FULLNAME)-\$(LIBMAJOR)\$(SLIBSUF)\'#" configure
-    sed -i "s#^SLIB_INSTALL_NAME=\'\$(SLIBNAME_WITH_VERSION)\'#SLIB_INSTALL_NAME=\'\$(SLIBNAME_WITH_MAJOR)\'#" configure
-    sed -i "s#^SLIB_INSTALL_LINKS=\'\$(SLIBNAME_WITH_MAJOR) \$(SLIBNAME)\'#SLIB_INSTALL_LINKS=\'\$(SLIBNAME)\'#" configure
-
+    sed -i "s#^SLIBNAME_WITH_MAJOR='\$(SLIBNAME).\$(LIBMAJOR)'#SLIBNAME_WITH_MAJOR='\$(SLIBPREF)\$(FULLNAME)-\$(LIBMAJOR)\$(SLIBSUF)'#" configure
+    sed -i "s#^SLIB_INSTALL_NAME='\$(SLIBNAME_WITH_VERSION)'#SLIB_INSTALL_NAME='\$(SLIBNAME_WITH_MAJOR)'#" configure
+    sed -i "s#^SLIB_INSTALL_LINKS='\$(SLIBNAME_WITH_MAJOR) \$(SLIBNAME)'#SLIB_INSTALL_LINKS='\$(SLIBNAME)'#" configure
 else
+    $OS=darwin-x86_64
     sed -i "" "s#^SLIBNAME_WITH_MAJOR=\'\$(SLIBNAME).\$(LIBMAJOR)\'#SLIBNAME_WITH_MAJOR=\'\$(SLIBPREF)\$(FULLNAME)-\$(LIBMAJOR)\$(SLIBSUF)\'#" configure
     sed -i "" "s#^SLIB_INSTALL_NAME=\'\$(SLIBNAME_WITH_VERSION)\'#SLIB_INSTALL_NAME=\'\$(SLIBNAME_WITH_MAJOR)\'#" configure
     sed -i "" "s#^SLIB_INSTALL_LINKS=\'\$(SLIBNAME_WITH_MAJOR) \$(SLIBNAME)\'#SLIB_INSTALL_LINKS=\'\$(SLIBNAME)\'#" configure
 fi
 popd
 
+ARM_PLATFORM=$NDK/platforms/android-16/arch-arm/
+ARM_PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/$OS
+
+ARM64_PLATFORM=$NDK/platforms/android-21/arch-arm64/
+ARM64_PREBUILT=$NDK/toolchains/aarch64-linux-android-4.9/prebuilt/$OS
+
+X86_PLATFORM=$NDK/platforms/android-16/arch-x86/
+X86_PREBUILT=$NDK/toolchains/x86-4.9/prebuilt/$OS
+
+X86_64_PLATFORM=$NDK/platforms/android-21/arch-x86_64/
+X86_64_PREBUILT=$NDK/toolchains/x86_64-4.9/prebuilt/$OS
+
+MIPS_PLATFORM=$NDK/platforms/android-9/arch-mips/
+MIPS_PREBUILT=$NDK/toolchains/mipsel-linux-android-4.8/prebuilt/$OS
 
 function build_one
 {
@@ -106,7 +105,6 @@ pushd ffmpeg-$FFMPEG_VERSION
 	--enable-runtime-cpudetect \
 	--disable-logging \
 	--disable-gray \
-	--disable-swscale-alpha \
 	--disable-doc \
 	--disable-postproc \
 	--disable-avresample \
@@ -116,10 +114,10 @@ pushd ffmpeg-$FFMPEG_VERSION
 	--disable-iconv \
 	--disable-audiotoolbox \
 	--disable-videotoolbox \
+	--disable-swscale \
     --disable-ffplay \
     --disable-ffmpeg \
     --disable-ffprobe \
-    --disable-avfilter \
     --disable-avdevice \
     --disable-ffserver \
     $ADDITIONAL_CONFIGURE_FLAG
