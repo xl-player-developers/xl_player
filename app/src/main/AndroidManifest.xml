@@ -43,6 +43,10 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".Whack_a_mole_Activity"
                   android:screenOrientation="landscape"/>
+        <activity
+            android:name=".SimpleDemoActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
     </application>
 
 </manifest>
