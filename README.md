@@ -61,7 +61,7 @@ Create XLPlayer instance need an `android.content.Context`, as usual we pass an 
 We need a surface set to player,then we can play ^_^  
 note: surface mast set to player after it created. as usual we call `xlPlayer.setSurface` in `SurfaceHolder`'s Callback:`surfaceCreated` function.
 
-java code [`SimpleDemoActivity.java`](tree/master/app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java)
+java code [`SimpleDemoActivity.java`](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java)
 
     public class SimpleDemoActivity extends Activity {
         private XLPlayer xlPlayer;
@@ -89,7 +89,7 @@ java code [`SimpleDemoActivity.java`](tree/master/app/src/main/java/com/cls/xl/x
         }
     }
 
-Android Layout [`activity_simple_demo.xml`](blob/master/app/src/main/res/layout/activity_whack_a_mole.xml)
+Android Layout [`activity_simple_demo.xml`](app/src/main/res/layout/activity_whack_a_mole.xml)
 
     <?xml version="1.0" encoding="utf-8"?>
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
