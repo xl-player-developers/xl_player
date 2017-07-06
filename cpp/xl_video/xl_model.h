@@ -9,7 +9,7 @@
 
 
 
-xl_model *createModel(ModelType mType, AAssetManager *pAAssetManager);
+xl_model *createModel(ModelType mType);
 
 void freeModel(xl_model *model);
 

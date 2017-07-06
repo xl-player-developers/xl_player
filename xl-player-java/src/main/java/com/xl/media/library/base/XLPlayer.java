@@ -76,8 +76,7 @@ public class XLPlayer {
             String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
             bestrate = Integer.parseInt(rate);
         }
-        // TODO: 2017/5/25 干掉assets
-        BaseNativeInterface.initPlayer(this, context.getAssets(), android.os.Build.VERSION.SDK_INT, bestrate);
+        BaseNativeInterface.initPlayer(this, android.os.Build.VERSION.SDK_INT, bestrate);
     }
 
     public void playVideo(String url, float time, MODEL_TYPE model) {

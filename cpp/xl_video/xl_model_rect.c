@@ -8,7 +8,6 @@
 #include "xl_glsl_program.h"
 
 static int video_width = 0, video_height = 0;
-static AAssetManager *pManager;
 
 static inline void resize_video(xl_model *model){
     int screen_width = model->viewport_w, screen_height = model->viewport_h;
@@ -56,7 +55,7 @@ static void draw_rect(xl_model *model){
 void update_frame_rect(xl_model *model, AVFrame * frame){
     if(model->pixel_format != frame->format){
         model->pixel_format = (enum AVPixelFormat)frame->format;
-        model->program = xl_glsl_program_get(model->type, model->pixel_format, pManager);
+        model->program = xl_glsl_program_get(model->type, model->pixel_format);
         glUseProgram(model->program->program);
         switch(frame->format){
             case AV_PIX_FMT_YUV420P:
@@ -96,8 +95,7 @@ void update_frame_rect(xl_model *model, AVFrame * frame){
     }
 }
 
-xl_model * model_rect_create(AAssetManager *pAAssetManager){
-    pManager = pAAssetManager;
+xl_model * model_rect_create(){
     xl_model *model = (xl_model *) malloc(sizeof(xl_model));
     model->type = Rect;
     model->program = NULL;

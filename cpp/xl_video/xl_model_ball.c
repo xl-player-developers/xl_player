@@ -8,7 +8,6 @@
 #include "xl_texture.h"
 #include "xl_glsl_program.h"
 
-static AAssetManager *pManager;
 static GLfloat _rx, _ry, _rz;
 static GLfloat _eyez;
 static GLfloat _fovy = 1, _w = 1, _h = 1;
@@ -112,7 +111,7 @@ static void draw_expand(xl_model *model) {
 void update_frame_ball(xl_model *model, AVFrame *frame) {
     if (model->pixel_format != frame->format) {
         model->pixel_format = (enum AVPixelFormat) frame->format;
-        model->program = xl_glsl_program_get(model->type, model->pixel_format, pManager);
+        model->program = xl_glsl_program_get(model->type, model->pixel_format);
         glUseProgram(model->program->program);
         switch (frame->format) {
             case AV_PIX_FMT_YUV420P:
@@ -166,8 +165,7 @@ static void update_distance_architecture(xl_model *model, GLfloat distance) {
     updateFov(model, distance * 60);
 }
 
-xl_model *model_ball_create(AAssetManager *pAAssetManager) {
-    pManager = pAAssetManager;
+xl_model *model_ball_create() {
     xl_model *model = (xl_model *) malloc(sizeof(xl_model));
     model->type = Ball;
     model->program = NULL;
@@ -202,15 +200,14 @@ xl_model *model_ball_create(AAssetManager *pAAssetManager) {
     return model;
 }
 
-xl_model *model_architecture_create(AAssetManager *pAAssetManager) {
-    xl_model *m = model_ball_create(pAAssetManager);
+xl_model *model_architecture_create() {
+    xl_model *m = model_ball_create();
     m->type = Architecture;
     m->update_distance = update_distance_architecture;
     return m;
 }
 
-xl_model *model_planet_create(AAssetManager *pAAssetManager) {
-    pManager = pAAssetManager;
+xl_model *model_planet_create() {
     xl_model *model = (xl_model *) malloc(sizeof(xl_model));
     model->type = Planet;
     model->program = NULL;
@@ -241,8 +238,7 @@ xl_model *model_planet_create(AAssetManager *pAAssetManager) {
     return model;
 }
 
-xl_model *model_expand_create(AAssetManager *pAAssetManager) {
-    pManager = pAAssetManager;
+xl_model *model_expand_create() {
     xl_model *model = (xl_model *) malloc(sizeof(xl_model));
     model->type = Expand;
     model->program = NULL;

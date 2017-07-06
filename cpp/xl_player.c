@@ -9,25 +9,19 @@
 #include "xl_utils/xl_statistics.h"
 
 static xl_play_data *pd;
-static AAssetManager *pAAssetManager;
 
 static inline void changeModel(ModelType modelType) {
     if (pd->video_render_ctx->require_model_type != modelType) {
-        pd->video_render_ctx->change_model(pd->video_render_ctx, pAAssetManager, modelType);
+        pd->video_render_ctx->change_model(pd->video_render_ctx, modelType);
     }
 }
 
 JNIEXPORT void JNICALL
 Java_com_xl_media_library_base_BaseNativeInterface_initPlayer(JNIEnv *env, jobject instance,
-                                                              jobject xlPlayer, jobject manager,
+                                                              jobject xlPlayer,
                                                               jint runAndroidVersion,
                                                               jint bestSampleRate) {
     pd = xl_player_create(env, xlPlayer, runAndroidVersion, bestSampleRate);
-    if (env && manager) {
-        pAAssetManager = AAssetManager_fromJava(env, manager);
-    } else {
-        LOGE("get AssetManager error!");
-    }
 }
 
 JNIEXPORT void JNICALL

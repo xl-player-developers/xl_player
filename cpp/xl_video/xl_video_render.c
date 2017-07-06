@@ -12,11 +12,9 @@ void xl_video_render_set_window(xl_video_render_context *ctx, struct ANativeWind
     pthread_mutex_unlock(ctx->lock);
 }
 
-void xl_video_render_change_model(xl_video_render_context *ctx, AAssetManager *pAAssetManager,
-                                  ModelType model_type) {
+void xl_video_render_change_model(xl_video_render_context *ctx, ModelType model_type) {
     pthread_mutex_lock(ctx->lock);
     ctx->require_model_type = model_type;
-    ctx->pAAssetManager = pAAssetManager;
     ctx->cmd |= CMD_CHANGE_MODEL;
     pthread_mutex_unlock(ctx->lock);
 }

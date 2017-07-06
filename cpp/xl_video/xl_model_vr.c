@@ -10,7 +10,6 @@
 #include "xl_texture.h"
 #include "xl_mesh_factory.h"
 
-static AAssetManager *pManager;
 static GLfloat _eyez;
 
 static void updateViewMatrix(xl_model * model) {
@@ -46,7 +45,7 @@ static void resize(xl_model *model, int w, int h) {
 static void update_frame_vr(xl_model *model, AVFrame * frame){
     if(model->pixel_format != frame->format){
         model->pixel_format = (enum AVPixelFormat)frame->format;
-        model->program = xl_glsl_program_get(model->type, model->pixel_format, pManager);
+        model->program = xl_glsl_program_get(model->type, model->pixel_format);
         switch(frame->format){
             case AV_PIX_FMT_YUV420P:
                 model->bind_texture = bind_texture_yuv420p;
@@ -181,8 +180,7 @@ static void setup_eye(xl_eye *eye, xl_mesh * eye_mesh){
     eye->index_count = (size_t) eye_mesh->indexLen;
 }
 
-xl_model * model_vr_create(AAssetManager *pAAssetManager){
-    pManager = pAAssetManager;
+xl_model * model_vr_create(){
     xl_model *model = (xl_model *) malloc(sizeof(xl_model));
     model->type = VR;
     model->program = NULL;
@@ -214,7 +212,7 @@ xl_model * model_vr_create(AAssetManager *pAAssetManager){
     setup_eye(&model->right_eye, right_eye_mesh);
     free_mesh(right_eye_mesh);
     setup_frame_buffer(model);
-    model->program_distortion = xl_glsl_program_distortion_get(pAAssetManager);
+    model->program_distortion = xl_glsl_program_distortion_get();
 
     identity(model->modelMatrix);
     _eyez = 0;
