@@ -60,7 +60,8 @@ public class HwDecodeBridge {
     }
 
     public static ByteBuffer getInputBuffer(int id){
-        return codec.getInputBuffer(id);
+//        return codec.getInputBuffer(id);
+        return codec.getInputBuffers()[id];
     }
     public static void queueInputBuffer(int id, int size, long pts, int flags){
         codec.queueInputBuffer(id, 0, size, pts, flags);
@@ -107,8 +108,8 @@ public class HwDecodeBridge {
     }
 
     public static ByteBuffer getOutputBuffer(int id){
-        ByteBuffer ret = codec.getOutputBuffer(id);
-        return ret;
+//        ByteBuffer ret = codec.getOutputBuffer(id);
+        return codec.getOutputBuffers()[id];
     }
 
     public static void release(){

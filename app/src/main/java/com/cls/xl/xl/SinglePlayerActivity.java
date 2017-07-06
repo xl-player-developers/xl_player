@@ -198,7 +198,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
             ((TextView) findViewById(R.id.duration)).setText(formatTime(videoProMax));
             videoSeekBar.setMax(videoProMax);
             handler.sendEmptyMessageDelayed(1, 1000);
-            playIcon.setBackground(getResources().getDrawable(R.drawable.pause, null));
+            playIcon.setBackground(getResources().getDrawable(R.drawable.pause));
             playIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -211,7 +211,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
         public void onPause() {
             super.onPause();
             handler.removeCallbacksAndMessages(null);
-            playIcon.setBackground(getResources().getDrawable(R.drawable.play, null));
+            playIcon.setBackground(getResources().getDrawable(R.drawable.play));
             handler.sendEmptyMessageDelayed(1, 1000);
             playIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -225,7 +225,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
         public void onResume() {
             super.onResume();
             handler.sendEmptyMessageDelayed(1, 1000);
-            playIcon.setBackground(getResources().getDrawable(R.drawable.pause, null));
+            playIcon.setBackground(getResources().getDrawable(R.drawable.pause));
             playIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -242,7 +242,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                 ((TextView) findViewById(R.id.currentTime)).setText(formatTime(0));
                 ((TextView) findViewById(R.id.duration)).setText(formatTime(0));
                 handler.removeCallbacksAndMessages(null);
-                playIcon.setBackground(getResources().getDrawable(R.drawable.play, null));
+                playIcon.setBackground(getResources().getDrawable(R.drawable.play));
                 playIcon.setOnClickListener(playListener);
             }
         }

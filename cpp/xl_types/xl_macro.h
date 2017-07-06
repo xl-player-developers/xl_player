@@ -10,7 +10,7 @@
 #define LOGI(format, ...) __android_log_print(ANDROID_LOG_INFO, "(^_^)", format, ##__VA_ARGS__)
 #define LOGE(format, ...) __android_log_print(ANDROID_LOG_ERROR, "(>_<)", format, ##__VA_ARGS__)
 
-#define NDK_MEDIACODEC_VERSION 21
+#define NDK_MEDIACODEC_VERSION 28
 
 #define XL_HAS_AUDIO_FLAG 0x1
 #define XL_HAS_VIDEO_FLAG 0x2

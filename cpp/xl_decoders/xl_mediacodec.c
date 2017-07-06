@@ -343,7 +343,7 @@ void xl_mediacodec_release_buffer(xl_play_data *pd, AVFrame *frame) {
     JNIEnv *jniEnv = pd->video_render_ctx->jniEnv;
     xl_java_class * jc = pd->jc;
     (*jniEnv)->CallStaticVoidMethod(jniEnv, jc->HwDecodeBridge, jc->codec_releaseOutPutBuffer,
-                                    frame->HW_BUFFER_ID);
+                                    (int)frame->HW_BUFFER_ID);
 }
 
 int xl_mediacodec_receive_frame(xl_play_data *pd, AVFrame *frame) {

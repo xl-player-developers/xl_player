@@ -8,10 +8,13 @@ import java.nio.ByteBuffer;
 
 class BaseNativeInterface {
     static {
+        System.loadLibrary("avutil-55");
+        System.loadLibrary("swresample-2");
         System.loadLibrary("avcodec-57");
         System.loadLibrary("avformat-57");
-        System.loadLibrary("avutil-55");
         System.loadLibrary("avfilter-6");
+
+        System.loadLibrary("ekf");
         System.loadLibrary("xl_render");
     }
 

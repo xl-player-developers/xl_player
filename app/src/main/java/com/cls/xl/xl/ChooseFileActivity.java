@@ -117,7 +117,7 @@ public class ChooseFileActivity extends Activity {
                 });
             } else {
                 final File file = files.get(position - 1);
-                holder.fileType.setBackground(getResources().getDrawable(file.isDirectory() ? R.drawable.directory_icon : R.drawable.file_icon, null));
+                holder.fileType.setBackground(getResources().getDrawable(file.isDirectory() ? R.drawable.directory_icon : R.drawable.file_icon));
                 holder.fileName.setText(file.getName());
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
