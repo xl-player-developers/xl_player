@@ -44,7 +44,7 @@ static int get_audio_frame(xl_play_data * pd) {
     // eos          ==> return -1
     if (pd->audio_frame == NULL) {
         // 如果没有视频流  就从这里发结束信号
-        if (pd->eof && ((pd->av_track_flags & XL_HAS_VIDEO_FLAG) == 0) || pd->just_audio) {
+        if (pd->eof && (((pd->av_track_flags & XL_HAS_VIDEO_FLAG) == 0) || pd->just_audio)) {
             pd->send_message(pd, xl_message_stop);
         }
         return -1;
