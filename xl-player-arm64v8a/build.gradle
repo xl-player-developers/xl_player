@@ -33,8 +33,26 @@ android {
             path "CMakeLists.txt"
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+}
+apply plugin: 'com.novoda.bintray-release'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+publish {//lucifer add
+    artifactId = 'xl-player-arm64v8a'
+    userOrg = rootProject.userOrg
+    groupId = rootProject.groupId
+    repoName = rootProject.repo
+    publishVersion = rootProject.publishVersion
+    desc = rootProject.description
+    website = rootProject.website
+    licences = rootProject.licences
+    dryRun = false
+    bintrayUser = properties.getProperty("bintray_user")
+    bintrayKey = properties.getProperty("bintray_apikey")
 }
