@@ -8,5 +8,5 @@
 
 #include "../xl_types/xl_video_render_types.h"
 
-xl_model * model_rect_create(AAssetManager *pAAssetManager);
+xl_model * model_rect_create();
 #endif //XL_XL_MODEL_RECT_H

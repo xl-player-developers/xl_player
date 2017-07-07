@@ -101,7 +101,7 @@ void change_model(xl_video_render_context *ctx) {
     if (ctx->model != NULL) {
         freeModel(ctx->model);
     }
-    ctx->model = createModel(ctx->require_model_type, ctx->pAAssetManager);
+    ctx->model = createModel(ctx->require_model_type);
     memcpy(ctx->model->texture, ctx->texture, sizeof(GLuint) * 4);
     ctx->model->resize(ctx->model, ctx->width, ctx->height);
     if (ctx->model->type == Ball || ctx->model->type == VR || ctx->model->type == Architecture) {

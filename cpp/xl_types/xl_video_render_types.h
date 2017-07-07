@@ -7,7 +7,6 @@
 
 #include "jni.h"
 #include <stdlib.h>
-#include <android/asset_manager_jni.h>
 //#include <GLES3/gl3.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -115,7 +114,6 @@ typedef enum enum_xl_draw_mode {
 } xl_draw_mode;
 typedef struct struct_xl_video_render_context {
     JNIEnv *jniEnv;
-    AAssetManager *pAAssetManager;
     int width, height;
     EGLConfig config;
     EGLDisplay display;
@@ -136,8 +134,7 @@ typedef struct struct_xl_video_render_context {
 
     void (*set_window)(struct struct_xl_video_render_context *ctx, struct ANativeWindow *window);
 
-    void (*change_model)(struct struct_xl_video_render_context *ctx, AAssetManager *pAAssetManager,
-                         ModelType model_type);
+    void (*change_model)(struct struct_xl_video_render_context *ctx, ModelType model_type);
 
 } xl_video_render_context;
 #endif //XL_XL_VIDEO_RENDER_TYPES

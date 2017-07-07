@@ -9,20 +9,20 @@
 #include "xl_model_vr.h"
 
 
-xl_model *createModel(ModelType mType, AAssetManager *pAAssetManager) {
+xl_model *createModel(ModelType mType) {
     switch (mType) {
         case Rect:
-            return model_rect_create(pAAssetManager);
+            return model_rect_create();
         case Ball:
-            return model_ball_create(pAAssetManager);
+            return model_ball_create();
         case VR:
-            return model_vr_create(pAAssetManager);
+            return model_vr_create();
         case Planet:
-            return model_planet_create(pAAssetManager);
+            return model_planet_create();
         case Architecture:
-            return model_architecture_create(pAAssetManager);
+            return model_architecture_create();
         case Expand:
-            return model_expand_create(pAAssetManager);
+            return model_expand_create();
         default:
             LOGE("invalid model type");
            return NULL;

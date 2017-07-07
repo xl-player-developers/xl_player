@@ -22,7 +22,7 @@ class BaseNativeInterface {
     /**
      * XLSurface jni
      */
-    native static void initPlayer(XLPlayer xlPlayer, AssetManager manager,int runAndroidVersion,int bestSampleRate);
+    native static void initPlayer(XLPlayer xlPlayer, int runAndroidVersion,int bestSampleRate);
 
     native static void setBufferTime(float time);
 

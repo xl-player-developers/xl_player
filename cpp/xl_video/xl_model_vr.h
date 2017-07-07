@@ -8,6 +8,6 @@
 #include <android/asset_manager.h>
 #include "xl_model.h"
 
-xl_model * model_vr_create(AAssetManager *pAAssetManager);
+xl_model * model_vr_create();
 void model_vr_free(xl_model * model);
 #endif //XL_XL_MODEL_VR_H
