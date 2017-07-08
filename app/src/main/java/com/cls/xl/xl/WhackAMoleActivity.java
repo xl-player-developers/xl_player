@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Whack_a_mole_Activity extends Activity implements View.OnClickListener {
+public class WhackAMoleActivity extends Activity implements View.OnClickListener {
     private XLPlayer xlPlayer;
     private List<View> viewList = new ArrayList<>(4);
     private int currentIndex = 0;

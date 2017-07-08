@@ -18,4 +18,10 @@ public class OnPlayerStatusChangeListener {
 
     public void onPrepared() {
     }
+
+    public void onBufferEmpty() {
+    }
+
+    public void onBufferFull() {
+    }
 }

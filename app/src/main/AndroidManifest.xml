@@ -41,7 +41,7 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".youtube.YoutubeLikeActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".Whack_a_mole_Activity"
+        <activity android:name=".WhackAMoleActivity"
                   android:screenOrientation="landscape"/>
         <activity
             android:name=".SimpleDemoActivity"

@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
         intent = new Intent(MainActivity.this, YoutubeLikeActivity.class);
         intent.setAction("Youtube like");
         playerName.add(intent);
-        intent = new Intent(MainActivity.this, Whack_a_mole_Activity.class);
+        intent = new Intent(MainActivity.this, WhackAMoleActivity.class);
         intent.setAction("whack a mole");
         playerName.add(intent);
         intent = new Intent(MainActivity.this, SimpleDemoActivity.class);

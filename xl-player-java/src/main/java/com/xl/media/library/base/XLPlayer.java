@@ -267,17 +267,24 @@ public class XLPlayer {
                 }
                 break;
             case 3:
-                //转菊花
+                if (this.onPlayerStatusChangeListener != null) {
+                    onPlayerStatusChangeListener.onBufferEmpty();
+                }
                 break;
             case 4:
-                //收菊花
+                if (this.onPlayerStatusChangeListener != null) {
+                    onPlayerStatusChangeListener.onBufferFull();
+                }
                 break;
         }
 
         oldStatus = status;
     }
 
-    void onPlayError(int error){
+    void onPlayError(int error) {
+        if (onErrorCodeListener != null){
+            onErrorCodeListener.onGetErrorCode(error);
+        }
         System.out.println(error);
     }
 }
