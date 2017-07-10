@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xl.media.library.base.XLPlayer;
+import com.xl.media.library.base.MODEL_TYPE;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -64,25 +64,25 @@ public class SimpleVideoActivity extends Activity {
                 public void onClick(View v) {
                     Intent intent = new Intent(SimpleVideoActivity.this, SinglePlayerActivity.class);
                     intent.putExtra("media_url", videoUrls.get(name));
-                    XLPlayer.MODEL_TYPE type;
+                    MODEL_TYPE type;
                     switch (holder.getLayoutPosition()) {
                         case 0:
-                            type = XLPlayer.MODEL_TYPE.VR;
+                            type = MODEL_TYPE.VR;
                             break;
                         case 1:
-                            type = XLPlayer.MODEL_TYPE.Ball;
+                            type = MODEL_TYPE.Ball;
                             break;
                         case 2:
-                            type = XLPlayer.MODEL_TYPE.Planet;
+                            type = MODEL_TYPE.Planet;
                             break;
                         case 3:
-                            type = XLPlayer.MODEL_TYPE.Architecture;
+                            type = MODEL_TYPE.Architecture;
                             break;
                         case 4:
-                            type = XLPlayer.MODEL_TYPE.Expand;
+                            type = MODEL_TYPE.Expand;
                             break;
                         default:
-                            type = XLPlayer.MODEL_TYPE.Rect;
+                            type = MODEL_TYPE.Rect;
                             break;
 
                     }

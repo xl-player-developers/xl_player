@@ -19,8 +19,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xl.media.library.base.MODEL_TYPE;
 import com.xl.media.library.base.OnErrorCodeListener;
 import com.xl.media.library.base.OnPlayerStatusChangeListener;
+import com.xl.media.library.base.Statistics;
 import com.xl.media.library.base.XLPlayer;
 
 import static java.lang.String.format;
@@ -47,7 +49,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                     ((TextView) findViewById(R.id.currentTime)).setText(formatTime(videoProNow));
                     videoSeekBar.setProgress(videoProNow);
                     handler.sendEmptyMessageDelayed(1, 1000);
-                    XLPlayer.Statistics st = xlPlayer.getStatistics();
+                    Statistics st = xlPlayer.getStatistics();
 //                    System.out.println("fps = " + st.getFps() + " , bps = " + st.getFormatBps() + ", buffer = " + st.getBufferLength() + "ms");
                     break;
             }
@@ -135,9 +137,9 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                 }
             }
         });
-        XLPlayer.MODEL_TYPE modelType = (XLPlayer.MODEL_TYPE) getIntent().getSerializableExtra("model");
+        MODEL_TYPE modelType = (MODEL_TYPE) getIntent().getSerializableExtra("model");
         xlPlayer.playVideo(url, modelType);
-        if (modelType == XLPlayer.MODEL_TYPE.VR || modelType == XLPlayer.MODEL_TYPE.Ball) {
+        if (modelType == MODEL_TYPE.VR || modelType == MODEL_TYPE.Ball) {
             xlPlayer.setEnableTracker(true);
         }
     }
@@ -171,7 +173,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (xlPlayer.getModelType() == XLPlayer.MODEL_TYPE.Planet) {
+            if (xlPlayer.getModelType() == MODEL_TYPE.Planet) {
                 float centerX = mGLSurfaceView.getWidth() / 2f;
                 float centerY = mGLSurfaceView.getHeight() / 2f;
                 float startAngle = (float) Math.atan2(starty - centerY, startx - centerX);
@@ -191,7 +193,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
     View.OnClickListener playListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            xlPlayer.playVideo(url, 0, XLPlayer.MODEL_TYPE.Rect);
+            xlPlayer.playVideo(url, 0, MODEL_TYPE.Rect);
         }
     };
 
@@ -344,37 +346,37 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(false);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.Rect);
+                xlPlayer.changeModel(MODEL_TYPE.Rect);
                 break;
             case R.id.vr_model_ball:
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(true);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.Ball);
+                xlPlayer.changeModel(MODEL_TYPE.Ball);
                 break;
             case R.id.vr_model_building:
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(false);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.Architecture);
+                xlPlayer.changeModel(MODEL_TYPE.Architecture);
                 break;
             case R.id.vr_model_little_star:
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(false);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.Planet);
+                xlPlayer.changeModel(MODEL_TYPE.Planet);
                 break;
             case R.id.vr_model_pic:
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(false);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.Expand);
+                xlPlayer.changeModel(MODEL_TYPE.Expand);
                 break;
             case R.id.vr_model_two_eye:
                 nowScale = 1f;
                 xlPlayer.setEnableTracker(true);
                 findViewById(R.id.choose_vr_mode_layout).setVisibility(View.INVISIBLE);
-                xlPlayer.changeModel(XLPlayer.MODEL_TYPE.VR);
+                xlPlayer.changeModel(MODEL_TYPE.VR);
                 break;
             case R.id.enable_tracker:
                 xlPlayer.setEnableTracker(!xlPlayer.getEnableTracker());
