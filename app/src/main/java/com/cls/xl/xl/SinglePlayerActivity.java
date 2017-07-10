@@ -39,6 +39,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
     float nowScale = 1f;//缩放的取值范围,0.5f 到 2f
     String url;
     boolean isBackPlay = false;
+    MODEL_TYPE modelType = MODEL_TYPE.Rect;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
         @Override
@@ -137,9 +138,12 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                 }
             }
         });
-        MODEL_TYPE modelType = (MODEL_TYPE) getIntent().getSerializableExtra("model");
+        if (getIntent().hasExtra("model")){
+            modelType = (MODEL_TYPE) getIntent().getSerializableExtra("model");
+        }
+
         xlPlayer.playVideo(url, modelType);
-        if (modelType == MODEL_TYPE.VR || modelType == MODEL_TYPE.Ball) {
+        if (modelType == MODEL_TYPE.VR || modelType == MODEL_TYPE.Ball || modelType == MODEL_TYPE.Architecture) {
             xlPlayer.setEnableTracker(true);
         }
     }
@@ -193,7 +197,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
     View.OnClickListener playListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            xlPlayer.playVideo(url, 0, MODEL_TYPE.Rect);
+            xlPlayer.playVideo(url, 0, modelType);
         }
     };
 
