@@ -28,7 +28,7 @@
 原因是当minSdkVersion >= 21 时, 硬件解码器会使用Android Native层接口: AMediaCodec,
 否则需要通过反射使用java层接口Mediaodec,效率略低.
 
-### 直接在module下的build.gradle添加
+### 在module下的build.gradle添加
 
     compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'//必须
 
