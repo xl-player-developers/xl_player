@@ -4,13 +4,14 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.view.Surface;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
 
 import static com.xl.media.library.base.XLPlayer.MODEL_TYPE.Rect;
 
-public class XLPlayer {
+public class XLPlayer implements Serializable {
 
     private OnErrorCodeListener onErrorCodeListener;
     private OnPlayerStatusChangeListener onPlayerStatusChangeListener;
@@ -18,7 +19,7 @@ public class XLPlayer {
     private int oldStatus = -1;
     private MODEL_TYPE modelType;
 
-    public enum MODEL_TYPE {
+    public enum MODEL_TYPE implements Serializable {
         Rect(0), Ball(1), VR(2), Planet(3), Architecture(4), Expand(5);
         private int value;
 
@@ -31,7 +32,7 @@ public class XLPlayer {
         }
     }
 
-    public class Statistics {
+    public class Statistics implements Serializable {
         private int fps;
         private int bps;
         private int bufferLength;
@@ -90,6 +91,11 @@ public class XLPlayer {
 
     public void playVideo(String url, int time) {
         playVideo(url, time, Rect);
+    }
+
+    public void playVideo(String url, MODEL_TYPE modelType) {
+        this.modelType = modelType;
+        playVideo(url, 0, modelType);
     }
 
     public void playVideo(String url) {
@@ -281,10 +287,22 @@ public class XLPlayer {
         oldStatus = status;
     }
 
+    /**
+     * #define XL_ERROR_AUDIO_DECODE_SEND_PACKET 3001
+     * #define XL_ERROR_AUDIO_DECODE_CODEC_NOT_OPENED 3002
+     * #define XL_ERROR_AUDIO_DECODE_RECIVE_FRAME 3003
+     * <p>
+     * #define XL_ERROR_VIDEO_SW_DECODE_SEND_PACKET 4101
+     * #define XL_ERROR_VIDEO_SW_DECODE_CODEC_NOT_OPENED 4102
+     * #define XL_ERROR_VIDEO_SW_DECODE_RECIVE_FRAME 4103
+     * <p>
+     * #define XL_ERROR_VIDEO_HW_MEDIACODEC_RECEIVE_FRAME 501
+     *
+     * @param error error code from native
+     */
     void onPlayError(int error) {
-        if (onErrorCodeListener != null){
+        if (onErrorCodeListener != null) {
             onErrorCodeListener.onGetErrorCode(error);
         }
-        System.out.println(error);
     }
 }

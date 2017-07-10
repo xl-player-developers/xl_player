@@ -64,7 +64,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
         mGLSurfaceView = (SurfaceView) findViewById(R.id.m_xlsurface);
         mGLSurfaceView.setOnTouchListener(playerViewTouchListener);
         mGLSurfaceView.setKeepScreenOn(true);
-        mGLSurfaceView.getHolder().addCallback(new BaseHolderCallback(){
+        mGLSurfaceView.getHolder().addCallback(new BaseHolderCallback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 super.surfaceCreated(holder);
@@ -74,7 +74,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 super.surfaceChanged(holder, format, width, height);
-                xlPlayer.resize(width,height);
+                xlPlayer.resize(width, height);
             }
         });
         videoSeekBar = (SeekBar) findViewById(R.id.video_progress);
@@ -135,7 +135,11 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
                 }
             }
         });
-        xlPlayer.playVideo(url);
+        XLPlayer.MODEL_TYPE modelType = (XLPlayer.MODEL_TYPE) getIntent().getSerializableExtra("model");
+        xlPlayer.playVideo(url, modelType);
+        if (modelType == XLPlayer.MODEL_TYPE.VR || modelType == XLPlayer.MODEL_TYPE.Ball) {
+            xlPlayer.setEnableTracker(true);
+        }
     }
 
     View.OnTouchListener playerViewTouchListener = new View.OnTouchListener() {

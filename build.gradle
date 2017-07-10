@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0-alpha5'
@@ -15,6 +16,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
 }
 
@@ -25,7 +27,7 @@ task clean(type: Delete) {
 ext {
     userOrg = 'xl-player-developers'
     groupId = 'com.xl.media.library'//使用和包名一样就行 不一样有没事
-    publishVersion = '0.0.4'
+    publishVersion = '0.0.5'
     desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'//
     website = 'https://github.com/xl-player-developers/xl_player'
     licences = ['LGPL-3.0']

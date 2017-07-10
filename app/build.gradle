@@ -35,8 +35,8 @@ dependencies {
 //    compile project(':xl-player-arm64v8a')
 //    compile project(':xl-player-armeabi')
 //    compile project(':xl-player-java')
-    compile 'com.xl.media.library:xl-player-arm64v8a:0.0.4'
-    compile 'com.xl.media.library:xl-player-java:0.0.4'
-    compile 'com.xl.media.library:xl-player-armv7a:0.0.4'
-    compile 'com.xl.media.library:xl-player-armeabi:0.0.4'
+    compile 'com.xl.media.library:xl-player-arm64v8a:0.0.5'
+    compile 'com.xl.media.library:xl-player-java:0.0.5'
+    compile 'com.xl.media.library:xl-player-armv7a:0.0.5'
+    compile 'com.xl.media.library:xl-player-armeabi:0.0.5'
 }
