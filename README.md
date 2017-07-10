@@ -20,8 +20,6 @@
 * 支持列表播放
 * 支持设置缓存时长和大小
 
-## [DemoApk下载](simple_apk/app-debug.apk)
-
 ## 使用说明
 
 如果直接clone and run项目的话,建议先修改gradle/wrapper/gradle-wrapper.properties的 distributionUrl 和 project的build.gradle的classpath,否则可能会需要升级AndroidStudio的版本才能运行项目.
@@ -58,6 +56,8 @@
 以防止app报找不到第三方sdk.so的错误.
 
 ## [api说明](https://github.com/xl-player-developers/xl_player/wiki)
+
+## [DemoApk下载](simple_apk/app-debug.apk)
 
 ## Demo说明
 
