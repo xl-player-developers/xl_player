@@ -24,6 +24,8 @@
 
 ## 使用说明
 
+如果你直接clone and run项目的话,建议你先修改gradle/wrapper/gradle-wrapper.properties的 distributionUrl 和 project的build.gradle的classpath,否则可能会需要升级AndroidStudio的版本才能运行项目.
+
 我们的播放器库支持minSdkVersion 16+, 不过我们建议使用minSdkVersion >= 21.
 原因是当minSdkVersion >= 21 时, 硬件解码器会使用Android Native层接口: AMediaCodec,
 否则需要通过反射使用java层接口Mediaodec,效率略低.
@@ -53,15 +55,5 @@
     compile 'com.xl.media.library:xl-player-armv7a:<LAST-VERSION>'
 
 以防止app报找不到第三方sdk.so的错误.
-
-    
-### 创建一个简单的播放器
-
-注意：surface一定要在成功创建之后再传给player,一般做法是在`SurfaceHolder`的Callback:`surfaceCreated`函数里面调用`xlPlayer.setSurface`.
-
-java code [`SimpleDemoActivity.java`](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java)
-
-Android Layout [`activity_simple_demo.xml`](app/src/main/res/layout/activity_whack_a_mole.xml)
-
 
 ## [api说明](https://github.com/xl-player-developers/xl_player/wiki)

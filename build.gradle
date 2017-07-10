@@ -27,7 +27,7 @@ task clean(type: Delete) {
 ext {
     userOrg = 'xl-player-developers'
     groupId = 'com.xl.media.library'//使用和包名一样就行 不一样有没事
-    publishVersion = '0.0.5'
+    publishVersion = '0.0.6'
     desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'//
     website = 'https://github.com/xl-player-developers/xl_player'
     licences = ['LGPL-3.0']
