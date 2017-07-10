@@ -61,7 +61,7 @@
 
 ## Demo说明
 
-[SimpleDemoActivity](app/src/main/java/com/cls/xl/xl/YoutubeLikeActivity.java) 一个最基础的播放器使用页面
+[SimpleDemoActivity](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java) 一个最基础的播放器使用页面
 
 [SinglePlayerActivity](app/src/main/java/com/cls/xl/xl/SinglePlayerActivity.java) 播放音/视频的主要界面,里面涉及了大部分播放器的使用逻辑
 
@@ -71,9 +71,9 @@
 
 [ChooseFileActivity](app/src/main/java/com/cls/xl/xl/ChooseFileActivity.java) 文件选择页面,可以选择本地音视频文件进行播放
 
-[YoutubeLikeActivity](app/src/main/java/com/cls/xl/xl/YoutubeLikeActivity.java) 类似youtube的播放页面
+[YoutubeLikeActivity](app/src/main/java/com/cls/xl/xl/youtube/YoutubeLikeActivity.java) 类似youtube的播放页面
 
-[WhackAMoleActivity](app/src/main/java/com/cls/xl/xl/YoutubeLikeActivity.java) 打地鼠(播放中无缝切换Surface)页面
+[WhackAMoleActivity](app/src/main/java/com/cls/xl/xl/WhackAMoleActivity.java) 打地鼠(播放中无缝切换Surface)页面
 
 
 
