@@ -133,6 +133,6 @@ public class MultiPlayerActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.releaseVideo();
+        player.releasePlayer();
     }
 }

@@ -28,7 +28,7 @@ public class SimpleDemoActivity extends Activity {
             }
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-                xlPlayer.releaseVideo();
+                xlPlayer.releasePlayer();
             }
         });
         xlPlayer.playVideo("http://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv");

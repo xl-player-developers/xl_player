@@ -286,7 +286,7 @@ public class SinglePlayerActivity extends Activity implements View.OnClickListen
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
         handler = null;
-        xlPlayer.releaseVideo();
+        xlPlayer.releasePlayer();
         mGLSurfaceView = null;
     }
 

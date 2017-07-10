@@ -51,6 +51,6 @@ public class WhackAMoleActivity extends Activity implements View.OnClickListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        xlPlayer.releaseVideo();
+        xlPlayer.releasePlayer();
     }
 }

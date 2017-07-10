@@ -1,116 +1,65 @@
 # XLPlayer
-高性能android播放器,支持播放vr视频  
-A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.
-## 功能介绍 Introduction
-XLPlayer支持几乎所有的媒体封装格式,包括但不限于.mp4 .mkv .flv rtmp hls .webm .mov等.  
-当视频编码方式为H263/H264/H265/MPEG4/VP8/VP9时,XLPlayer会使用MediaCodec硬件加速解码(部分设备不支持H265 VP9).  
-音频全部使用libavcodec做为解码器,并且使用libavfilter进行重采样以适应不同手机的最佳音频采样率.  
+[ ![last version](https://api.bintray.com/packages/xl-player-developers/xl-player-library/xl-player-arm64v8a/images/download.svg) ](#)
 
-XLPlayer支持以几种模型渲染VR视频,球模式、盒子模式(带有透镜畸变和色散的补偿)、小行星模式、  
-建筑学模式(直线不会变弯,其他与球模式相同)、展开模式,其中球模式、盒子模式、建筑学模式支持陀螺仪控制.
+## 功能介绍
+* XLPlayer一般情况下使用MediaCodec->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频.
+* 支持音/视频播放,暂停,停止,seek,获取总时长,已播时长等播放器常用功能
+* 支持几乎所有的媒体封装格式,包括但不限于.mp4 .mkv .flv rtmp hls .webm .mov等.
+* H263/H264/H265/MPEG4/VP8/VP9 支持硬件加速(部分设备不支持H265 VP9).
+* 支持音频自适应最佳采样率播放
+* 支持音视频变速(0.5 - 2.0)不变调播放
+* 支持VR视频播放,VR视频模式动态切换(球模式、盒子模式、小行星模式、 建筑学模式、展开模式)
+* 球模式、盒子模式、建筑学模式支持陀螺仪控制.
+* 盒子模式带有透镜畸变和色散的补偿
+* 支持播放时动态切换surface
+* 支持动态切换画面方向
+* 支持后台播放
+* 支持获取已缓存时长,当前帧率,当前下载速度
+* 支持视频本身自带rotation的旋转
+* 支持强制软解(默认自适应)
+* 支持列表播放
+* 支持设置缓存时长和大小
 
-XLPlayer支持变速播放,0.5-2.0倍速任意调整.
+## 使用说明
 
-XLPlayer一般情况下使用MediaCodec->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频.
+我们的播放器库支持minSdkVersion 16+, 不过我们建议使用minSdkVersion >= 21.
+原因是当minSdkVersion >= 21 时, 硬件解码器会使用Android Native层接口: AMediaCodec,
+否则需要通过反射使用java层接口Mediaodec,效率略低.
 
-XLPlayer support almost all of media formats. Includ .mp4 .mkv .flv rtmp hls .webm .mov and so on.  
-When video coded by H263/H264/H265/MPEG4/VP8/VP9, XLPlayer will use MediaCodec decode video stream(some device not support H265 VP9).
-Audio stream will use libavcodec decode, and use libavfilter resample to adapt to different device's best audio sample rate.
+### 直接在module下的build.gradle添加
 
-XLPlayer support some model types to rend VR video, like ball_model / google_card_board / little_plant / expand_model.
-ball_model and google_card_board support gyroscope control.  
+    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'//必须
 
-XLPlayer support Variable Speed Playback, you can set playback with 0.5x-2.0x speed.
+    //适配minsdkversion >= 16
+    compile 'com.xl.media.library:xl-player-armeabi:<LAST-VERSION>'
+    compile 'com.xl.media.library:xl-player-armv7a:<LAST-VERSION>'
+    compile 'com.xl.media.library:xl-player-arm64v8a:<LAST-VERSION>'
 
-As usual XLPlayer work in MediaCodec->SurfaceTexture->OpenGL ES mode, this mode has high performance.
+    //适配minsdkversion >= 21 的版本,与>=16版本冲突
+    //compile 'com.xl.media.library:xl-player-armeabi-21:<LAST-VERSION>'
+    //compile 'com.xl.media.library:xl-player-armv7a-21:<LAST-VERSION>'
+    //compile 'com.xl.media.library:xl-player-arm64v8a-21:<LAST-VERSION>'
 
-## 使用说明 Usage
+默认情况下,建议三个abi的库版本都添加,以提高app性能.如果为了app包大小考虑,可只添加
 
-### step1: 把库加入到您的项目中 add library to your project
-我们的播放器库支持minSdkVersion 16+, 不过我们建议使用minSdkVersion 21+.  
-原因是当minSdkVersion >= 21 时, 硬件解码器会使用Android Native层接口: AMediaCodec,   
-否则需要通过反射使用java层接口Mediaodec,效率略低.  
-Our player library support minSdkVersion >= 16, but we suggest you use minSdkVersion >= 21.  
-Because when minSdkVersion >= 21, Hardware acceleration will use Native interface `AMediaCodec`,   
-otherwise it will **reflect** java interface `MediaCodec`, Efficiency is slightly lower.  
+    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'
+    compile 'com.xl.media.library:xl-player-armeabi:<LAST-VERSION>'
 
-在*build.gradle*文件中加入您需要的Native库(xl-player-armeabi/armv7a/arm64v8a),以及java接口库(xl-player-java)  
-Add Native library which you need(xl-player-armeabi/armv7a/arm64v8a),and the java interface library(xl-player-java) to _build.gradle_.
-##### minSdkVersion 21
-build.gradle
+有时候第三方的sdk并没有提供armeabi版本的sdk,只提供了armv7a的sdk,则需要替换为
 
-    ...
-    dependencies {
-        ...
-        compile project(':xl-player-armeabi-21')
-        compile project(':xl-player-armv7a-21')
-        compile project(':xl-player-arm64v8a-21')
-        
-        compile project(':xl-player-java')
-    }
+    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'
+    compile 'com.xl.media.library:xl-player-armv7a:<LAST-VERSION>'
+
+以防止app报找不到第三方sdk.so的错误.
+
     
-##### minSdkVersion 16
-build.gradle
+### 创建一个简单的播放器
 
-    ...
-    dependencies {
-        ...
-        compile project(':xl-player-armeabi')
-        compile project(':xl-player-armv7a')
-        compile project(':xl-player-arm64v8a')
-        
-        compile project(':xl-player-java')
-    }
-    
-### step2: 创建一个简单的播放器 create a simple player
-创建XLPlayer实例需要一个`android.content.Context`,一般使用`Activity`.  
-播放视频,还需要给播放器指定一个`Surface`,然后就可以调用播放了  
-注意：surface一定要在成功创建之后再传给player,一般做法是在`SurfaceHolder`的Callback:`surfaceCreated`函数里面调用`xlPlayer.setSurface`.  
-Create XLPlayer instance need an `android.content.Context`, as usual we pass an `Activity` to the constructor.  
-We need a surface set to player,then we can play
-note: surface mast set to player after it created. as usual we call `xlPlayer.setSurface` in `SurfaceHolder`'s Callback:`surfaceCreated` function.
+注意：surface一定要在成功创建之后再传给player,一般做法是在`SurfaceHolder`的Callback:`surfaceCreated`函数里面调用`xlPlayer.setSurface`.
 
 java code [`SimpleDemoActivity.java`](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java)
 
-    public class SimpleDemoActivity extends Activity {
-        private XLPlayer xlPlayer;
-        private SurfaceView surfaceView;
-        @Override
-        protected void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_simple_demo);
-            xlPlayer = new XLPlayer(this);
-            surfaceView = ((SurfaceView) findViewById(R.id.m_xlsurface));
-            surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-                @Override
-                public void surfaceCreated(SurfaceHolder holder) {
-                    xlPlayer.setSurface(holder.getSurface());
-                }
-                @Override
-                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                    xlPlayer.resize(width, height);
-                }
-                @Override
-                public void surfaceDestroyed(SurfaceHolder holder) {
-                    xlPlayer.releaseVideo();
-                }
-            });
-            xlPlayer.playVideo("http://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv");
-        }
-    }
-
 Android Layout [`activity_simple_demo.xml`](app/src/main/res/layout/activity_whack_a_mole.xml)
 
-    <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000">
-        <SurfaceView
-            android:id="@+id/m_xlsurface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"/>
-    </RelativeLayout>
+
+## api说明
