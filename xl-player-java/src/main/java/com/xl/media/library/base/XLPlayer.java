@@ -5,11 +5,7 @@ import android.media.AudioManager;
 import android.view.Surface;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Locale;
 
-import static com.xl.media.library.base.XLPlayer.MODEL_TYPE.Rect;
 
 /**
  * XLPlayer
@@ -22,67 +18,6 @@ public class XLPlayer implements Serializable {
     private int oldStatus = -1;
     private MODEL_TYPE modelType;
 
-    /**
-     * 播放器画面模型枚举
-     */
-    public enum MODEL_TYPE implements Serializable {
-
-        Rect(0),//矩形
-        Ball(1),//球型
-        VR(2),//双眼
-        Planet(3),//小行星
-        Architecture(4),//建筑
-        Expand(5);//展开
-        private int value;
-
-        MODEL_TYPE(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    /**
-     * 播放器动态参数
-     */
-    public class Statistics implements Serializable {
-        private int fps;//帧率
-        private int bps;//下载速度
-        private int bufferLength;//缓存时长
-
-        public Statistics(ByteBuffer buffer) {
-            if (buffer != null) {
-                buffer.order(ByteOrder.BIG_ENDIAN);
-                buffer.position(0);
-                fps = buffer.getInt();
-                bps = buffer.getInt();
-                bufferLength = buffer.getInt();
-            }
-        }
-
-        public String getFormatBps() {
-            if (bps > 1000000) {
-                return String.format(Locale.getDefault(), "%.2fMb/s", (float) bps / 1000000f);
-            } else if (bps > 1000) {
-                return String.format(Locale.getDefault(), "%.2fKb/s", (float) bps / 1000f);
-            }
-            return String.format(Locale.getDefault(), "%dKb/s", bps);
-        }
-
-        public int getBps() {
-            return bps;
-        }
-
-        public int getFps() {
-            return fps;
-        }
-
-        public int getBufferLength() {
-            return bufferLength;
-        }
-    }
 
     /**
      * 实例化一个播放器对象
@@ -121,7 +56,7 @@ public class XLPlayer implements Serializable {
      * @param time 起始时间
      */
     public void playVideo(String url, int time) {
-        playVideo(url, time, Rect);
+        playVideo(url, time, MODEL_TYPE.Rect);
     }
 
     /**
@@ -141,7 +76,7 @@ public class XLPlayer implements Serializable {
      * @param url 视频地址
      */
     public void playVideo(String url) {
-        playVideo(url, 0, Rect);
+        playVideo(url, 0, MODEL_TYPE.Rect);
     }
 
     /**
@@ -370,7 +305,7 @@ public class XLPlayer implements Serializable {
     /**
      * 返回播放信息
      *
-     * @return {@link XLPlayer.Statistics}
+     * @return {@link Statistics}
      */
     public Statistics getStatistics() {
         return new Statistics(BaseNativeInterface.getStatistics());

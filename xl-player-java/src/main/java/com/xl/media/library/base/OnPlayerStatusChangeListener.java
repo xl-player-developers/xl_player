@@ -1,5 +1,8 @@
 package com.xl.media.library.base;
 
+/**
+ * 播放器状态变化listener
+ */
 public class OnPlayerStatusChangeListener {
     public void onPause() {
     }

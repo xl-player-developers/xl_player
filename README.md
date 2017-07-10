@@ -20,6 +20,8 @@
 * 支持列表播放
 * 支持设置缓存时长和大小
 
+## [DemoApk下载](simple_apk/app-debug.apk)
+
 ## 使用说明
 
 我们的播放器库支持minSdkVersion 16+, 不过我们建议使用minSdkVersion >= 21.
@@ -62,4 +64,4 @@ java code [`SimpleDemoActivity.java`](app/src/main/java/com/cls/xl/xl/SimpleDemo
 Android Layout [`activity_simple_demo.xml`](app/src/main/res/layout/activity_whack_a_mole.xml)
 
 
-## api说明
+## [api说明](https://github.com/xl-player-developers/xl_player/wiki)

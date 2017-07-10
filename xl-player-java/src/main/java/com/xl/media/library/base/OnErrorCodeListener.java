@@ -1,9 +1,8 @@
 package com.xl.media.library.base;
 
 /**
- * Created by bianxiaolong on 2017/5/15.
+ * 播放器返回错误码回调
  */
-
 public interface OnErrorCodeListener {
     /**
      * #define XL_ERROR_AUDIO_DECODE_SEND_PACKET 3001
