@@ -57,7 +57,7 @@
 
 ## [api说明](https://github.com/xl-player-developers/xl_player/wiki)
 
-## [DemoApk下载](simple_apk/app-debug.apk)
+## [DemoApk下载](sample_apk/app-debug.apk)
 
 ## Demo说明
 
@@ -65,7 +65,7 @@
 
 [SinglePlayerActivity](app/src/main/java/com/cls/xl/xl/SinglePlayerActivity.java) 播放音/视频的主要界面,里面涉及了大部分播放器的使用逻辑
 
-[SimpleVideoActivity](app/src/main/java/com/cls/xl/xl/SimpleVideoActivity.java) 一个简单的Demo视频列表
+[SampleVideoActivity](app/src/main/java/com/cls/xl/xl/SampleVideoActivity.java) 一个简单的Demo视频列表
 
 [MultiPlayerActivity](app/src/main/java/com/cls/xl/xl/MultiPlayerActivity.java) 列表形式的播放器页面
 
@@ -75,5 +75,17 @@
 
 [WhackAMoleActivity](app/src/main/java/com/cls/xl/xl/WhackAMoleActivity.java) 打地鼠(播放中无缝切换Surface)页面
 
+## 例图
 
+![图片1](sample_pic/1.gif)
+
+![图片2](sample_pic/2.gif)
+
+![图片3](sample_pic/3.gif)
+
+![图片4](sample_pic/4.gif)
+
+![图片5](sample_pic/5.gif)
+
+![图片6](sample_pic/6.gif)
 

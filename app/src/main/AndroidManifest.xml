@@ -37,7 +37,7 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
         <activity android:name=".ChooseFileActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".SimpleVideoActivity"
+        <activity android:name=".SampleVideoActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".youtube.YoutubeLikeActivity"
                   android:screenOrientation="portrait"/>
