@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
         intent.setAction("Choose file");
         playerName.add(intent);
         intent = new Intent(MainActivity.this, SampleVideoActivity.class);
-        intent.setAction("Simple video");
+        intent.setAction("Sample video");
         playerName.add(intent);
         intent = new Intent(MainActivity.this, MultiPlayerActivity.class);
         intent.setAction("Multi player");
