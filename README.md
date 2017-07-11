@@ -1,6 +1,8 @@
 # XLPlayer
 [ ![last version](https://api.bintray.com/packages/xl-player-developers/xl-player-library/xl-player-arm64v8a/images/download.svg) ](#)
 
+[iOS播放器SGPlayer传送门](https://github.com/libobjc/SGPlayer)
+
 ## 功能介绍
 * XLPlayer一般情况下使用MediaCodec->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频.
 * 支持音/视频播放,暂停,停止,seek,获取总时长,已播时长等播放器常用功能
