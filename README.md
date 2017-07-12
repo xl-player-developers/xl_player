@@ -4,14 +4,16 @@
 [iOS播放器SGPlayer传送门](https://github.com/libobjc/SGPlayer)
 
 ## 功能介绍
-* XLPlayer一般情况下使用MediaCodec->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频.
+* XLPlayer除解封装(封装格式太多,Android默认只支持少部分,所以使用ffmpeg)和陀螺仪数据滤波(用的google的headtrecker)其他部分均使用Android原生api
+* 默认情况下使用MediaCodec(Android 硬解)->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频
+* 支持各种流媒体和本地视频播放
+* 支持几乎所有的媒体封装格式,包括但不限于.mp4 .mkv .flv rtmp hls .webm .mov等
 * 支持音/视频播放,暂停,停止,seek,获取总时长,已播时长等播放器常用功能
-* 支持几乎所有的媒体封装格式,包括但不限于.mp4 .mkv .flv rtmp hls .webm .mov等.
-* H263/H264/H265/MPEG4/VP8/VP9 支持硬件加速(部分设备不支持H265 VP9).
+* H263/H264/H265/MPEG4/VP8/VP9 支持硬件加速(部分设备不支持H265 VP9)
 * 支持音频自适应最佳采样率播放
 * 支持音视频变速(0.5 - 2.0)不变调播放
 * 支持VR视频播放,VR视频模式动态切换(球模式、盒子模式、小行星模式、 建筑学模式、展开模式)
-* 球模式、盒子模式、建筑学模式支持陀螺仪控制.
+* 球模式、盒子模式、建筑学模式支持陀螺仪控制
 * 盒子模式带有透镜畸变和色散的补偿
 * 支持播放时动态切换surface
 * 支持动态切换画面方向
