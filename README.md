@@ -4,7 +4,7 @@
 [iOS播放器SGPlayer传送门](https://github.com/libobjc/SGPlayer)
 
 ## 功能介绍
-* XLPlayer除解封装(封装格式太多,Android默认只支持少部分,所以使用ffmpeg)和陀螺仪数据滤波(用的google的headtrecker)其他部分均使用Android原生api
+* XLPlayer除解封装(ffmpeg)和陀螺仪数据滤波(HeadTrecker)其他部分均使用Android原生api
 * 默认情况下使用MediaCodec(Android 硬解)->SurfaceTexture->OpenGL ES工作模式,性能优异,小米3也可以轻松播放4K VR视频
 * 支持各种流媒体和本地视频播放
 * 支持几乎所有的媒体封装格式,包括但不限于.mp4 .mkv .flv rtmp hls .webm .mov等
