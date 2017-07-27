@@ -191,21 +191,7 @@ static inline int draw_video_frame(xl_play_data *pd) {
         diff = time_stamp - xl_clock_get(pd->video_clock);
     }
     xl_model *model = pd->video_render_ctx->model;
-    // if diff > WAIT_FRAME_SLEEP_US   then  use previous frame
-    // else  use current frame   and  release frame
-    if (diff < WAIT_FRAME_SLEEP_US) {
-        pthread_mutex_lock(pd->video_render_ctx->lock);
-        model->update_frame(model, pd->video_frame);
-        pthread_mutex_unlock(pd->video_render_ctx->lock);
-        xl_player_release_video_frame(pd, pd->video_frame);
-        if(!pd->is_sw_decode){
-            JNIEnv * jniEnv = pd->video_render_ctx->jniEnv;
-            (*jniEnv)->CallStaticVoidMethod(jniEnv, pd->jc->SurfaceTextureBridge, pd->jc->texture_updateTexImage);
-            jfloatArray texture_matrix_array = (*jniEnv)->CallStaticObjectMethod(jniEnv, pd->jc->SurfaceTextureBridge, pd->jc->texture_getTransformMatrix);
-            (*jniEnv)->GetFloatArrayRegion(jniEnv, texture_matrix_array, 0, 16, model->texture_matrix);
-            (*jniEnv)->DeleteLocalRef(jniEnv, texture_matrix_array);
-        }
-    }
+
 
     // diff >= 33ms if draw_mode == wait_frame return -1
     //              if draw_mode == fixed_frequency draw previous frame ,return 0
@@ -219,6 +205,20 @@ static inline int draw_video_frame(xl_play_data *pd) {
             return 0;
         }
     } else {
+        // if diff > WAIT_FRAME_SLEEP_US   then  use previous frame
+        // else  use current frame   and  release frame
+        pthread_mutex_lock(pd->video_render_ctx->lock);
+        model->update_frame(model, pd->video_frame);
+        pthread_mutex_unlock(pd->video_render_ctx->lock);
+        xl_player_release_video_frame(pd, pd->video_frame);
+        if(!pd->is_sw_decode){
+            JNIEnv * jniEnv = pd->video_render_ctx->jniEnv;
+            (*jniEnv)->CallStaticVoidMethod(jniEnv, pd->jc->SurfaceTextureBridge, pd->jc->texture_updateTexImage);
+            jfloatArray texture_matrix_array = (*jniEnv)->CallStaticObjectMethod(jniEnv, pd->jc->SurfaceTextureBridge, pd->jc->texture_getTransformMatrix);
+            (*jniEnv)->GetFloatArrayRegion(jniEnv, texture_matrix_array, 0, 16, model->texture_matrix);
+            (*jniEnv)->DeleteLocalRef(jniEnv, texture_matrix_array);
+        }
+
         if (diff > 0) usleep((useconds_t) diff);
         draw_now(pd->video_render_ctx);
         pd->statistics->frames ++;

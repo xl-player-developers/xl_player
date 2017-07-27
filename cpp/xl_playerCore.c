@@ -18,6 +18,7 @@
 #include "xl_utils/xl_statistics.h"
 
 static int stop(xl_play_data *pd);
+
 static void on_error(xl_play_data *pd);
 
 static void send_message(xl_play_data *pd, int message) {
@@ -51,7 +52,7 @@ static int message_callback(int fd, int events, void *data) {
     return 1;
 }
 
-static void on_error_cb(xl_play_data * pd, int error_code){
+static void on_error_cb(xl_play_data *pd, int error_code) {
     pd->error_code = error_code;
     pd->send_message(pd, xl_message_error);
 }
@@ -207,17 +208,17 @@ static int hw_codec_init(xl_play_data *pd) {
     return 0;
 }
 
-static int av_format_interrupt_cb(void * data){
+static int av_format_interrupt_cb(void *data) {
     xl_play_data *pd = data;
-    if(pd->timeout_start == 0){
+    if (pd->timeout_start == 0) {
         pd->timeout_start = xl_clock_get_current_time();
         return 0;
-    }else{
+    } else {
         uint64_t time_use = xl_clock_get_current_time() - pd->timeout_start;
-        if(time_use > pd->read_timeout * 1000000){
+        if (time_use > pd->read_timeout * 1000000) {
             pd->on_error(pd, -2);
             return 1;
-        }else{
+        } else {
             return 0;
         }
     }
@@ -505,7 +506,7 @@ void change_status(xl_play_data *pd, PlayStatus status) {
                                   status);
 }
 
-static void on_error(xl_play_data *pd){
+static void on_error(xl_play_data *pd) {
     (*pd->jniEnv)->CallVoidMethod(pd->jniEnv, pd->xlPlayer, pd->jc->player_onPlayError,
                                   pd->error_code);
 }

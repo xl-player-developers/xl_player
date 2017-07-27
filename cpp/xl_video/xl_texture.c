@@ -7,6 +7,7 @@
 void initTexture(xl_play_data * pd) {
     xl_video_render_context * ctx = pd->video_render_ctx;
     if(pd->is_sw_decode){
+        //软解数据可能会有Y/U/V三个通道的数据,或者Y/UV两个通道,所以初始化了三个纹理
         glGenTextures(3, ctx->texture);
         for(int i = 0; i < 3; i++){
             glBindTexture(GL_TEXTURE_2D, ctx->texture[i]);
@@ -16,6 +17,7 @@ void initTexture(xl_play_data * pd) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
     }else{
+        //硬解的时候只需要创建一个surfacetexture即可
         glGenTextures(1, &ctx->texture[3]);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, ctx->texture[3]);
         glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
