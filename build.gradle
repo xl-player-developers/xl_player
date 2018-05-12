@@ -12,14 +12,6 @@ buildscript {
     }
     rootProject.copy {
         from "CMakeLists.txt"
-        into "xl-player-armeabi"
-    }
-    rootProject.copy {
-        from "CMakeLists.txt"
-        into "xl-player-armeabi-21"
-    }
-    rootProject.copy {
-        from "CMakeLists.txt"
         into "xl-player-arm64v8a"
 
     }
@@ -29,8 +21,6 @@ buildscript {
     }
 
 
-
-
     rootProject.copy {
         from "cpp"
         into "xl-player-armv7a/src/main/cpp"
@@ -38,14 +28,6 @@ buildscript {
     rootProject.copy {
         from "cpp"
         into "xl-player-armv7a-21/src/main/cpp"
-    }
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-armeabi/src/main/cpp"
-    }
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-armeabi-21/src/main/cpp"
     }
     rootProject.copy {
         from "cpp"
@@ -79,13 +61,9 @@ task clean(type: Delete) {
     delete "xl-player-armv7a-21/src/main/cpp"
     delete "xl-player-arm64v8a/src/main/cpp"
     delete "xl-player-arm64v8a-21/src/main/cpp"
-    delete "xl-player-armeabi/src/main/cpp"
-    delete "xl-player-armeabi-21/src/main/cpp"
 
     delete "xl-player-armv7a/CMakeLists.txt"
     delete "xl-player-armv7a-21/CMakeLists.txt"
-    delete "xl-player-armeabi/CMakeLists.txt"
-    delete "xl-player-armeabi-21/CMakeLists.txt"
     delete "xl-player-arm64v8a/CMakeLists.txt"
     delete "xl-player-arm64v8a-21/CMakeLists.txt"
 
