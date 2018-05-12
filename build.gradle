@@ -2,48 +2,13 @@
 
 buildscript {
 
-    rootProject.copy {
-        from "CMakeLists.txt"
-        into "xl-player-armv7a"
-    }
-    rootProject.copy {
-        from "CMakeLists.txt"
-        into "xl-player-armv7a-21"
-    }
-    rootProject.copy {
-        from "CMakeLists.txt"
-        into "xl-player-arm64v8a"
-
-    }
-    rootProject.copy {
-        from "CMakeLists.txt"
-        into "xl-player-arm64v8a-21"
-    }
-
-
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-armv7a/src/main/cpp"
-    }
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-armv7a-21/src/main/cpp"
-    }
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-arm64v8a/src/main/cpp"
-    }
-    rootProject.copy {
-        from "cpp"
-        into "xl-player-arm64v8a-21/src/main/cpp"
-    }
-
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha9'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath 'com.novoda:bintray-release:0.5.0'
     }
 }
@@ -57,25 +22,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-    delete "xl-player-armv7a/src/main/cpp"
-    delete "xl-player-armv7a-21/src/main/cpp"
-    delete "xl-player-arm64v8a/src/main/cpp"
-    delete "xl-player-arm64v8a-21/src/main/cpp"
-
-    delete "xl-player-armv7a/CMakeLists.txt"
-    delete "xl-player-armv7a-21/CMakeLists.txt"
-    delete "xl-player-arm64v8a/CMakeLists.txt"
-    delete "xl-player-arm64v8a-21/CMakeLists.txt"
-
-}
-
-ext {
-    userOrg = 'xl-player-developers'
-    groupId = 'com.xl.media.library'
-    publishVersion = '0.0.6'
-    desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'
-//
-    website = 'https://github.com/xl-player-developers/xl_player'
-    licences = ['LGPL-3.0']
-    repo = 'xl-player-library'
 }
