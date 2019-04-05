@@ -8,7 +8,9 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-        targetSdkVersion 28
+        minSdkVersion 16
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 16
         versionCode 1
         versionName "1.0"
         ndk {

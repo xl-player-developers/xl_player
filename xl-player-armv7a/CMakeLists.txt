@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
 set(lib_src_DIR ${CMAKE_SOURCE_DIR}/ff_libs/${ANDROID_ABI})
 include_directories(${CMAKE_SOURCE_DIR}/../jni_include)
 
-MESSAGE(STATUS "biandroid +  ${ANDROID_ABI}")
+MESSAGE(STATUS "XL_PLayer : ANDROID_ABI  ${ANDROID_ABI}")
 
 add_library(avcodec SHARED IMPORTED)
 set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libavcodec-57.so)
@@ -110,21 +110,40 @@ find_library(bmp jnigraphics)
 find_library(glesv2-lib GLESv2)
 find_library(egl-lib EGL)
 find_library(sles-lib OpenSLES)
-MESSAGE(STATUS "biandroid +  ${CMAKE_SYSTEM_VERSION}")
-find_library(media-ndk mediandk)
-target_link_libraries(
-        xl_render
-        ekf
-        avcodec
-        avformat
-        avutil
-        avfilter
-        swresample
-        ${log-lib}
-        ${bmp}
-        ${android-lib}
-        ${egl-lib}
-        ${glesv2-lib}
-        ${sles-lib}
-        ${media-ndk}
-)
+if (${CMAKE_SYSTEM_VERSION} MATCHES "21")
+    MESSAGE(STATUS "XL_PLayer : CMAKE_SYSTEM_VERSION  ${CMAKE_SYSTEM_VERSION} has mediandk")
+    find_library(media-ndk mediandk)
+    target_link_libraries(
+            xl_render
+            ekf
+            avcodec
+            avformat
+            avutil
+            avfilter
+            swresample
+            ${log-lib}
+            ${bmp}
+            ${android-lib}
+            ${egl-lib}
+            ${glesv2-lib}
+            ${sles-lib}
+            ${media-ndk}
+    )
+else (${CMAKE_SYSTEM_VERSION} LESS "21")
+    MESSAGE(STATUS "XL_PLayer : CMAKE_SYSTEM_VERSION  ${CMAKE_SYSTEM_VERSION} not have mediandk")
+    target_link_libraries(
+            xl_render
+            ekf
+            avcodec
+            avformat
+            avutil
+            avfilter
+            swresample
+            ${log-lib}
+            ${bmp}
+            ${android-lib}
+            ${egl-lib}
+            ${glesv2-lib}
+            ${sles-lib}
+    )
+endif (${CMAKE_SYSTEM_VERSION} MATCHES "21")
