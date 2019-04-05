@@ -24,60 +24,16 @@
 * 支持列表播放
 * 支持设置缓存时长和大小
 
-## 使用说明
+## 使用说明及注意事项请参考[release_v1.0](https://github.com/xl-player-developers/xl_player/tree/release_v1.0)
 
-如果直接clone and run项目的话,建议先修改gradle/wrapper/gradle-wrapper.properties的 distributionUrl 和 project的build.gradle的classpath,否则可能会需要升级AndroidStudio的版本才能运行项目.
+## v_2.0计划
+* 1、由于现在Android机型的Ndk-abi版本已经非常统一，99%以上支持armeabi-v7a,所以在新版本中将去掉不必要的abi版本支持逻辑，简化项目结构。**（已完成）**
+* 2、现有的缓存是指内存缓存，新版本有计划加入本地缓存逻辑，缓存的媒体格式包括但不限于普通流媒体，HLS，DASH。**（不确定什么时候有时间做，但是在计划内）**
+* 3、单独分支做一个纯播放器，没有VR等功能单纯播放器，原因是当前master的版本由于需要VR等功能使得项目最终的体积较大。**（不确定什么时候有时间做，但是在计划内）**
+* 4、音频播放加入aaudio。**（不确定什么时候有时间做，但是在计划内）**
 
-我们的播放器库支持minSdkVersion 16+, 不过我们建议使用minSdkVersion >= 21.
-原因是当minSdkVersion >= 21 时, 硬件解码器会使用Android Native层接口: AMediaCodec,
-否则需要通过反射使用java层接口Mediaodec,效率略低.
-
-### 在module下的build.gradle添加
-
-    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'//必须
-
-    //适配minsdkversion >= 16
-    compile 'com.xl.media.library:xl-player-armeabi:<LAST-VERSION>'
-    compile 'com.xl.media.library:xl-player-armv7a:<LAST-VERSION>'
-    compile 'com.xl.media.library:xl-player-arm64v8a:<LAST-VERSION>'
-
-    //适配minsdkversion >= 21 的版本,与>=16版本冲突
-    //compile 'com.xl.media.library:xl-player-armeabi-21:<LAST-VERSION>'
-    //compile 'com.xl.media.library:xl-player-armv7a-21:<LAST-VERSION>'
-    //compile 'com.xl.media.library:xl-player-arm64v8a-21:<LAST-VERSION>'
-
-建议三个abi版本的库都添加,以提高app性能.
-如果为了app包大小考虑,可只添加:
-
-    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'
-    compile 'com.xl.media.library:xl-player-armeabi:<LAST-VERSION>'
-
-有时候第三方的sdk并没有提供armeabi版本的sdk,只提供了armv7a的sdk,则需要替换为
-
-    compile 'com.xl.media.library:xl-player-java:<LAST-VERSION>'
-    compile 'com.xl.media.library:xl-player-armv7a:<LAST-VERSION>'
-
-以防止app报找不到第三方sdk.so的错误.
-
-## [api说明](https://github.com/xl-player-developers/xl_player/wiki)
-
-## [DemoApk下载](sample_apk/app-debug.apk)
-
-## Demo说明
-
-[SimpleDemoActivity](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java) 一个最基础的播放器使用页面
-
-[SinglePlayerActivity](app/src/main/java/com/cls/xl/xl/SinglePlayerActivity.java) 播放音/视频的主要界面,里面涉及了大部分播放器的使用逻辑
-
-[SampleVideoActivity](app/src/main/java/com/cls/xl/xl/SampleVideoActivity.java) 一个简单的Demo视频列表
-
-[MultiPlayerActivity](app/src/main/java/com/cls/xl/xl/MultiPlayerActivity.java) 列表形式的播放器页面
-
-[ChooseFileActivity](app/src/main/java/com/cls/xl/xl/ChooseFileActivity.java) 文件选择页面,可以选择本地音视频文件进行播放
-
-[YoutubeLikeActivity](app/src/main/java/com/cls/xl/xl/youtube/YoutubeLikeActivity.java) 类似youtube的播放页面
-
-[WhackAMoleActivity](app/src/main/java/com/cls/xl/xl/WhackAMoleActivity.java) 打地鼠(播放中无缝切换Surface)页面
+## 新版本注意事项
+   **新版本中只保留了armeabi-v7a，最低支持版本的api-16,默认不会调用jni中的mediandk，只会反射java中的mediacodec，但是调用AMediaCodec的逻辑被保存了下来，所以如果你的app版本minsdk >= 21，你可以通过将[build.gradle](xl-player-armv7a/build.gradle)中的minSdkVersion和targetSdkVersion改为21+来启用这部分逻辑。**
 
 ## 例图
 
