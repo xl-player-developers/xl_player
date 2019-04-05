@@ -44,15 +44,16 @@ apply plugin: 'com.novoda.bintray-release'
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 publish {//lucifer add
+    userOrg = 'xl-player-developers'
+    groupId = 'com.xl.media.library'
+    publishVersion = '2.0.1'
+    desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'
+    website = 'https://github.com/xl-player-developers/xl_player'
+    licences = ['LGPL-3.0']
+    repoName = 'xl-player-library'
     artifactId = 'xl-player-armv7a'
-    userOrg = rootProject.userOrg
-    groupId = rootProject.groupId
-    repoName = rootProject.repo
-    publishVersion = rootProject.publishVersion
-    desc = rootProject.description
-    website = rootProject.website
-    licences = rootProject.licences
-    dryRun=false
+    desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'
+    dryRun = false
     bintrayUser = properties.getProperty("bintray_user")
     bintrayKey = properties.getProperty("bintray_apikey")
 }

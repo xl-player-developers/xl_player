@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     repositories {
         jcenter()
@@ -8,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath 'com.novoda:bintray-release:0.5.0'
+        classpath 'com.novoda:bintray-release:0.9'
     }
 }
 
@@ -21,14 +20,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-ext {
-    userOrg = 'xl-player-developers'
-    groupId = 'com.xl.media.library'
-    publishVersion = '0.0.6'
-    desc = 'A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.'
-    website = 'https://github.com/xl-player-developers/xl_player'
-    licences = ['LGPL-3.0']
-    repo = 'xl-player-library'
 }
