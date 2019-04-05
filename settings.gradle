@@ -1,1 +1,1 @@
-include ':app', ':xl-player-armv7a', ':xl-player-java', ':xl-player-armeabi', ':xl-player-arm64v8a', ':xl-player-armv7a-21', ':xl-player-armeabi-21', ':xl-player-arm64v8a-21'
+include ':app', ':xl-player-armv7a'
