@@ -26,6 +26,8 @@
 
 ## 使用说明及注意事项请参考[release_v1.0](https://github.com/xl-player-developers/xl_player/tree/release_v1.0)
 
+### gradle配置： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1'
+
 ## v_2.0计划
 * 1、由于现在Android机型的Ndk-abi版本已经非常统一，99%以上支持armeabi-v7a,所以在新版本中将去掉不必要的abi版本支持逻辑，简化项目结构。**（已完成）**
 * 2、现有的缓存是指内存缓存，新版本有计划加入本地缓存逻辑，缓存的媒体格式包括但不限于普通流媒体，HLS，DASH。**（不确定什么时候有时间做，但是在计划内）**
@@ -38,8 +40,6 @@
    **但是调用AMediaCodec的逻辑被保存了下来，所以如果你的app版本minsdk >= 21，你可以通过将[build.gradle](xl-player-armv7a/build.gradle)中的minSdkVersion和targetSdkVersion改为21+来启用这部分逻辑。**
    
    **将来如果api-21以下的设备占比降到了0.1以下，则会将minSdkVersion和targetSdkVersion改为21，来启用AMediaCodec相关的逻辑。**
-   
-   **gradle配置： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1' **
   
 ## 例图
 
