@@ -13,76 +13,33 @@ XLPlayer support Variable Speed Playback, you can set playback with 0.5x-2.0x sp
 
 As usual XLPlayer work in MediaCodec->SurfaceTexture->OpenGL ES mode, this mode has high performance.
 
-##  Usage
+##  Instructions and Notes Please refer to [release_v1.0](https://github.com/xl-player-developers/xl_player/tree/release_v1.0)
 
-### step1:add library to your project
-Our player library support minSdkVersion >= 16, but we suggest you use minSdkVersion >= 21.
-Because when minSdkVersion >= 21, Hardware acceleration will use Native interface `AMediaCodec`,
-otherwise it will **reflect** java interface `MediaCodec`, Efficiency is slightly lower.
+#### Gradle configuration： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1'
 
-Add Native library which you need(xl-player-armeabi/armv7a/arm64v8a),and the java interface library(xl-player-java) to _build.gradle_.
-##### minSdkVersion 21
-build.gradle
+## v_2.0 Plan
+* 1.Since the Ndk-abi version of the Android model is now very unified, more than 99% support armeabi-v7a, so in the new version, unnecessary abi version support logic will be removed to simplify the project structure. **（Done）**
+* 2.The existing cache refers to the memory cache. The new version has plans to join the local cache logic. The cached media formats include but are not limited to normal streaming media, HLS, DASH.**（Not sure when to have time to do it, but within the plan）**
+* 3.Separate branch to make a pure player, there is no VR and other functions pure player, because the current master version because of the need for VR and other functions make the project eventually larger.**（Not sure when to have time to do it, but within the plan）**
+* 4.Audio playback is added to aaudio.**（Not sure when to have time to do it, but within the plan）**
 
-	compile 'com.xl.media.library:xl-player-java:0.0.5'
-    compile 'com.xl.media.library:xl-player-armeabi-21:0.0.5'
-    compile 'com.xl.media.library:xl-player-armv7a-21:0.0.5'
-    compile 'com.xl.media.library:xl-player-arm64v8a-21:0.0.5'
+## New version considerations
+   **Only the armeabi-v7a is retained in the new version. It can be seen from [Tencent Statistics](https://mta.qq.com/mta/data/device/os) that the devices below api-21 account for more than 7%. In order to be able to adapt more models, the lowest and target versions in the project are api-16, so the mediandk in jni will not be called by default, only the mediacodec in java will be reflected.**
+  
+   **But the logic to call AMediaCodec is saved, so if your app version minsdk >= 21, you can change the minSdkVersion and targetSdkVersion in [build.gradle](xl-player-armv7a/build.gradle) to 21+ To enable this part of the logic.**
+   
+   **In the future, if the proportion of devices below api-21 falls below 0.1, the minSdkVersion and targetSdkVersion will be changed to 21 to enable AMediaCodec related logic.**
+  
+## examples
 
-##### minSdkVersion 16
-build.gradle
+![图片1](sample_pic/1.gif)
 
-    compile 'com.xl.media.library:xl-player-java:0.0.5'
-    compile 'com.xl.media.library:xl-player-armeabi:0.0.5'
-    compile 'com.xl.media.library:xl-player-armv7a:0.0.5'
-    compile 'com.xl.media.library:xl-player-arm64v8a:0.0.5'
+![图片2](sample_pic/2.gif)
 
-### step2:  create a simple player
-Create XLPlayer instance need an `android.content.Context`
-We need a surface set to player,then we can play
-note: surface mast set to player after it created. as usual we call `xlPlayer.setSurface` in `SurfaceHolder`'s Callback:`surfaceCreated` function.
+![图片3](sample_pic/3.gif)
 
-java code [`SimpleDemoActivity.java`](app/src/main/java/com/cls/xl/xl/SimpleDemoActivity.java)
+![图片4](sample_pic/4.gif)
 
-    public class SimpleDemoActivity extends Activity {
-        private XLPlayer xlPlayer;
-        private SurfaceView surfaceView;
-        @Override
-        protected void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_simple_demo);
-            xlPlayer = new XLPlayer(this);
-            surfaceView = ((SurfaceView) findViewById(R.id.m_xlsurface));
-            surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-                @Override
-                public void surfaceCreated(SurfaceHolder holder) {
-                    xlPlayer.setSurface(holder.getSurface());
-                }
-                @Override
-                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                    xlPlayer.resize(width, height);
-                }
-                @Override
-                public void surfaceDestroyed(SurfaceHolder holder) {
-                    xlPlayer.releaseVideo();
-                }
-            });
-            xlPlayer.playVideo("http://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv");
-        }
-    }
+![图片5](sample_pic/5.gif)
 
-Android Layout [`activity_simple_demo.xml`](app/src/main/res/layout/activity_whack_a_mole.xml)
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000">
-        <SurfaceView
-            android:id="@+id/m_xlsurface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"/>
-    </RelativeLayout>
+![图片6](sample_pic/6.gif)
