@@ -38,7 +38,9 @@
    **但是调用AMediaCodec的逻辑被保存了下来，所以如果你的app版本minsdk >= 21，你可以通过将[build.gradle](xl-player-armv7a/build.gradle)中的minSdkVersion和targetSdkVersion改为21+来启用这部分逻辑。**
    
    **将来如果api-21以下的设备占比降到了0.1以下，则会将minSdkVersion和targetSdkVersion改为21，来启用AMediaCodec相关的逻辑。**
-
+   
+   **gradle配置： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1' **
+  
 ## 例图
 
 ![图片1](sample_pic/1.gif)
