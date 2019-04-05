@@ -33,8 +33,8 @@
 * 4、音频播放加入aaudio。**（不确定什么时候有时间做，但是在计划内）**
 
 ## 新版本注意事项
-   **新版本中只保留了armeabi-v7a，通过[腾讯统计](https://mta.qq.com/mta/data/device/os)可以看出，api-21以下的设备占比在7%以上，为了能够适配更多机型，项目中最低和target的版本都是api-16,所以默认不会调用jni中的mediandk，只会反射java中的mediacodec。
-   但是调用AMediaCodec的逻辑被保存了下来，所以如果你的app版本minsdk >= 21，你可以通过将[build.gradle](xl-player-armv7a/build.gradle)中的minSdkVersion和targetSdkVersion改为21+来启用这部分逻辑。**
+   **新版本中只保留了armeabi-v7a，通过[腾讯统计](https://mta.qq.com/mta/data/device/os)可以看出，api-21以下的设备占比在7%以上，为了能够适配更多机型，项目中最低和target的版本都是api-16,所以默认不会调用jni中的mediandk，只会反射java中的mediacodec。**
+  **但是调用AMediaCodec的逻辑被保存了下来，所以如果你的app版本minsdk >= 21，你可以通过将[build.gradle](xl-player-armv7a/build.gradle)中的minSdkVersion和targetSdkVersion改为21+来启用这部分逻辑。**
 
 ## 例图
 
