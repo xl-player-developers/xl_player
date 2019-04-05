@@ -1,5 +1,5 @@
 # XLPlayer
-[ ![last version](https://api.bintray.com/packages/xl-player-developers/xl-player-library/xl-player-arm64v8a/images/download.svg) ](https://bintray.com/xl-player-developers/xl-player-library)
+[ ![Download](https://api.bintray.com/packages/xl-player-developers/xl-player-library/xl-player-armv7a/images/download.svg?version=2.0.1) ](https://bintray.com/xl-player-developers/xl-player-library/xl-player-armv7a/2.0.1/link)
 
 [iOS播放器SGPlayer传送门](https://github.com/libobjc/SGPlayer)
 
