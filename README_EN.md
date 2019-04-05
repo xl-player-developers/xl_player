@@ -1,5 +1,8 @@
 # XLPlayer
 A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.
+
+ [中文](README.md) | [FFmpeg](http://ffmpeg.org/)
+
 ## Introduction
 
 XLPlayer support almost all of media formats. Includ .mp4 .mkv .flv rtmp hls .webm .mov and so on.
