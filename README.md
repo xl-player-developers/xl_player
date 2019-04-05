@@ -1,7 +1,7 @@
 # XLPlayer
 [ ![Download](https://api.bintray.com/packages/xl-player-developers/xl-player-library/xl-player-armv7a/images/download.svg?version=2.0.1) ](https://bintray.com/xl-player-developers/xl-player-library/xl-player-armv7a/2.0.1/link)
 
-[iOS播放器SGPlayer传送门](https://github.com/libobjc/SGPlayer)
+[English](https://github.com/xl-player-developers/xl_player/blob/master/README_EN.md)
 
 ## 功能介绍
 * XLPlayer除解封装(ffmpeg)和陀螺仪数据滤波(HeadTrecker)其他部分均使用Android原生api
