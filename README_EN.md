@@ -1,7 +1,7 @@
 # XLPlayer
 A high performance Android media player, base on ffmpeg and MediaCodec, support VR video.
 
- [中文](README.md) | [FFmpeg](http://ffmpeg.org/)
+ [中文](README.md) | [SGPlayer for iOS](https://github.com/libobjc/SGPlayer) | [FFmpeg](http://ffmpeg.org/)
 
 ## Introduction
 
