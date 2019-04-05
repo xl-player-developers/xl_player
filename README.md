@@ -26,7 +26,7 @@
 
 ## 使用说明及注意事项请参考[release_v1.0](https://github.com/xl-player-developers/xl_player/tree/release_v1.0)
 
-### gradle配置： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1'
+#### gradle配置： implementation 'com.xl.media.library:xl-player-armv7a:2.0.1'
 
 ## v_2.0计划
 * 1、由于现在Android机型的Ndk-abi版本已经非常统一，99%以上支持armeabi-v7a,所以在新版本中将去掉不必要的abi版本支持逻辑，简化项目结构。**（已完成）**
