@@ -20,6 +20,15 @@ set_target_properties(avfilter PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libav
 add_library(swresample SHARED IMPORTED)
 set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${lib_src_DIR}/libswresample-2.so)
 
+# Set the path to the Oboe directory.
+set (OBOE_DIR ${CMAKE_SOURCE_DIR}/../../oboe)
+
+# Add the Oboe library as a subdirectory in your project.
+add_subdirectory (${OBOE_DIR} ./oboe)
+
+# Specify the path to the Oboe header files.
+include_directories (${OBOE_DIR}/include)
+
 add_library(
         xl_render
         SHARED
@@ -121,6 +130,7 @@ if (${CMAKE_SYSTEM_VERSION} MATCHES "21")
             avutil
             avfilter
             swresample
+            oboe
             ${log-lib}
             ${bmp}
             ${android-lib}
@@ -139,6 +149,7 @@ else (${CMAKE_SYSTEM_VERSION} LESS "21")
             avutil
             avfilter
             swresample
+            oboe
             ${log-lib}
             ${bmp}
             ${android-lib}
