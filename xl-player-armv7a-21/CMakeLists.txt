@@ -110,39 +110,20 @@ find_library(bmp jnigraphics)
 find_library(glesv2-lib GLESv2)
 find_library(egl-lib EGL)
 find_library(sles-lib OpenSLES)
-MESSAGE(STATUS "biandroid +  ${CMAKE_SYSTEM_VERSION}" )
-if (${CMAKE_SYSTEM_VERSION} MATCHES "21")
-    find_library(media-ndk mediandk)
-    target_link_libraries(
-                           xl_render
-                           ekf
-                           avcodec
-                           avformat
-                           avutil
-                           avfilter
-                           swresample
-                           ${log-lib}
-                           ${bmp}
-                           ${android-lib}
-                           ${egl-lib}
-                           ${glesv2-lib}
-                           ${sles-lib}
-                           ${media-ndk}
-                            )
-else (${CMAKE_SYSTEM_VERSION} LESS "21")
-    target_link_libraries(
-                           xl_render
-                           ekf
-                           avcodec
-                           avformat
-                           avutil
-                           avfilter
-                           swresample
-                           ${log-lib}
-                           ${bmp}
-                           ${android-lib}
-                           ${egl-lib}
-                           ${glesv2-lib}
-                           ${sles-lib}
-                            )
-endif(${CMAKE_SYSTEM_VERSION} MATCHES "21")
+find_library(media-ndk mediandk)
+target_link_libraries(
+                       xl_render
+                       ekf
+                       avcodec
+                       avformat
+                       avutil
+                       avfilter
+                       swresample
+                       ${log-lib}
+                       ${bmp}
+                       ${android-lib}
+                       ${egl-lib}
+                       ${glesv2-lib}
+                       ${sles-lib}
+                       ${media-ndk}
+                        )
